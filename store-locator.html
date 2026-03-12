@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Store Locator | Nawty Water</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Leaflet (free map, no API key required) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- GSAP for animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+    <style>
+    /* =====================================================
+       ROOT
+    ===================================================== */
+    :root {
+        --blue:          #000e47;
+        --grey:          #e9e7dc;
+        --dark-grey:     #686868;
+        --light-grey:    #d9d9d9;
+        --red:           #b8223a;
+        --orange:        #c85814;
+        --pink:          #cf322f;
+        --dusty-rose:    #d39ca2;
+        --outfit:        "Outfit";
+
+        /* Flavour brand colours */
+        --strawberry:    #e8354d;
+        --passion-gold:  #c9920a;
+        --passion-purple:#5b0eb3;
+        --lychee-blue:   #1a8fbf;
+
+        /* Beach palette */
+        --ocean:         #008FB5;
+        --ocean-light:   #00BFDF;
+        --sky:           #C8F0FA;
+        --sand:          #FFF9F0;
+        --sand-warm:     #FFF3E0;
+        --coral:         #eb4f91;
+        --tropical-teal: #00C9D4;
+        --citrus:        #FFB700;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-family: 'Outfit', sans-serif; scroll-behavior: smooth; }
+    body { background: var(--grey); color: var(--blue); font-family: 'Outfit', sans-serif; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; background-image: url('https://royalbev.com/wp-content/themes/Royal%20Beveraget%20Theme/img/pics/about/layer.svg'); background-repeat: repeat; }
+    a { text-decoration: none; color: inherit; }
+    img { display: block; max-width: 100%; }
+
+    /* =====================================================
+       NAV
+    ===================================================== */
+    .site-nav {
+        position: fixed; top: 0; left: 0; right: 0; z-index: 2000;
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 1.6rem 5%;
+        transition: background .4s, padding .4s, backdrop-filter .4s;
+    }
+    .site-nav.solid {
+        background: rgba(255,249,240,.94);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        padding: 1rem 5%;
+        box-shadow: 0 2px 24px rgba(0,14,71,.07);
+    }
+    .site-nav.on-hero .nav-logo,
+    .site-nav.on-hero .nav-links a { color: #fff; }
+    .site-nav.on-hero .nav-cta { background:#fff !important; color:var(--ocean) !important; }
+    .site-nav.on-hero .nav-cta:hover { background:var(--coral) !important; color:#fff !important; }
+    .site-nav.solid.on-hero .nav-logo,
+    .site-nav.solid.on-hero .nav-links a { color: var(--blue); }
+    .site-nav.solid .nav-cta { background:var(--ocean) !important; color:#fff !important; }
+
+    .nav-logo { display:inline-flex; align-items:center; }
+    .nav-logo img { height:72px; width:auto; display:block; }
+    @media (max-width:768px) { .nav-logo img { height:56px; } }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; align-items: center; }
+    .nav-links a { font-size: .78rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--blue); transition: color .3s; }
+    .nav-links a:hover { color: var(--ocean); }
+    .nav-links .nav-active { color: var(--coral); }
+    .nav-cta { padding: .6rem 1.6rem; background: var(--ocean) !important; color: #fff !important; border-radius: 9999px; transition: background .3s !important; }
+    .nav-cta:hover { background: var(--coral) !important; }
+    @media (max-width: 768px) { .nav-links { display: none; } }
+
+    /* =====================================================
+       PAGE HEADER
+    ===================================================== */
+    .page-header {
+        background: linear-gradient(170deg,
+            #0077A8 0%,
+            #00A8CC 30%,
+            #00C9E8 55%,
+            #7EE4F5 75%,
+            #C2F4FD 90%,
+            #FFF8EE 100%
+        );
+        padding: clamp(10rem, 15vh, 12rem) 5% 6rem;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+    /* Soft sun burst */
+    .page-header::before {
+        content:'';
+        position:absolute;
+        top:-10%; left:50%; transform:translateX(-50%);
+        width:70vw; height:70vw;
+        background: radial-gradient(circle, rgba(255,255,255,.15) 0%, transparent 65%);
+        pointer-events:none;
+        z-index: 0;
+    }
+    /* Wave bottom edge removed as per user request */
+    .page-header-eyebrow {
+        position: relative; z-index: 1;
+        font-size: clamp(.6rem,1.2vw,.7rem); font-weight: 600; letter-spacing: .4em;
+        text-transform: uppercase; color: rgba(255,255,255,.7);
+        margin-bottom: 1.5rem;
+        opacity: 0;
+    }
+    .page-header-title {
+        position: relative; z-index: 1;
+        font-size: clamp(3.5rem,10vw,7.5rem); font-weight: 900;
+        line-height: .82; letter-spacing: -.06em; text-transform: uppercase; color: #fff;
+        margin-bottom: 1.5rem;
+        text-shadow: 0 4px 40px rgba(0,60,100,.15);
+    }
+    .page-header-line {
+        display: block;
+        overflow: hidden;
+        padding: 0 0.15em 0.15em;
+        margin: 0 -0.15em;
+        opacity: 0;
+        transform: translateY(110%);
+    }
+    .page-header-title em { font-style: italic; color: var(--coral); padding-right: 0.1em; }
+    .page-header-sub {
+        position: relative; z-index: 1;
+        font-size: clamp(.85rem,1.8vw,1.1rem); font-weight: 300;
+        color: rgba(255,255,255,.75); letter-spacing: .15em;
+        text-transform: uppercase;
+        opacity: 0;
+    }
+
+    /* =====================================================
+       MAIN LAYOUT: sidebar + map
+    ===================================================== */
+    .locator-wrap {
+        display: grid;
+        grid-template-columns: 380px 1fr;
+        height: calc(100vh - 200px);
+        min-height: 600px;
+        position: sticky;
+        top: 64px;
+    }
+
+    @media (max-width: 900px) {
+        .locator-wrap {
+            grid-template-columns: 1fr;
+            grid-template-rows: auto 1fr;
+            height: auto;
+            position: static;
+        }
+    }
+
+    /* =====================================================
+       SIDEBAR
+    ===================================================== */
+    .sidebar {
+        background: #fff;
+        display: flex;
+        flex-direction: column;
+        border-right: 1px solid var(--light-grey);
+        overflow: hidden;
+        z-index: 10;
+    }
+
+    /* Search + filter bar */
+    .sidebar-controls {
+        padding: 1.25rem 1.25rem .75rem;
+        border-bottom: 1px solid var(--light-grey);
+        display: flex;
+        flex-direction: column;
+        gap: .75rem;
+        flex-shrink: 0;
+    }
+
+    .search-box {
+        position: relative;
+    }
+    .search-box input {
+        width: 100%;
+        padding: .75rem 1rem .75rem 2.5rem;
+        border: 1.5px solid var(--light-grey);
+        background: var(--grey);
+        font-family: 'Outfit', sans-serif;
+        font-size: .85rem;
+        color: var(--blue);
+        outline: none;
+        transition: border-color .3s;
+        border-radius: 0;
+    }
+    .search-box input::placeholder { color: var(--dark-grey); }
+    .search-box input:focus { border-color: var(--blue); }
+    .search-icon {
+        position: absolute;
+        left: .8rem; top: 50%;
+        transform: translateY(-50%);
+        pointer-events: none;
+        opacity: .4;
+        font-size: .85rem;
+    }
+
+    /* filter chips */
+    .filter-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: .4rem;
+    }
+    .chip {
+        padding: .35rem .85rem;
+        font-family: 'Outfit', sans-serif;
+        font-size: .65rem;
+        font-weight: 700;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        border: 1.5px solid var(--light-grey);
+        background: #fff;
+        color: var(--dark-grey);
+        cursor: pointer;
+        border-radius: 9999px;
+        transition: all .25s;
+        white-space: nowrap;
+    }
+    .chip:hover,
+    .chip.active { border-color: var(--blue); color: var(--blue); background: rgba(0,14,71,.05); }
+    .chip.chain-pnp.active    { border-color: var(--red); color: var(--red); background: rgba(184,34,58,.06); }
+    .chip.chain-checkers.active { border-color: #007b40; color: #007b40; background: rgba(0,123,64,.06); }
+    .chip.chain-woolworths.active { border-color: #1a1a1a; color: #1a1a1a; background: rgba(0,0,0,.05); }
+    .chip.chain-spar.active   { border-color: #dc1d2e; color: #dc1d2e; background: rgba(220,29,46,.06); }
+    .chip.chain-dischem.active { border-color: #005ba1; color: #005ba1; background: rgba(0,91,161,.06); }
+
+    .results-count {
+        padding: .6rem 1.25rem;
+        font-size: .68rem;
+        font-weight: 600;
+        letter-spacing: .12em;
+        text-transform: uppercase;
+        color: var(--dark-grey);
+        background: rgba(0,14,71,.03);
+        border-bottom: 1px solid var(--light-grey);
+        flex-shrink: 0;
+    }
+
+    /* Store list */
+    .store-list {
+        overflow-y: auto;
+        flex: 1;
+    }
+    .store-list::-webkit-scrollbar { width: 4px; }
+    .store-list::-webkit-scrollbar-track { background: transparent; }
+    .store-list::-webkit-scrollbar-thumb { background: var(--light-grey); border-radius: 2px; }
+
+    .province-label {
+        padding: .75rem 1.25rem .4rem;
+        font-size: .6rem; font-weight: 800;
+        letter-spacing: .25em; text-transform: uppercase;
+        color: var(--dark-grey);
+        background: rgba(0,14,71,.02);
+        border-bottom: 1px solid rgba(0,14,71,.06);
+        position: sticky; top: 0; z-index: 1;
+    }
+
+    .store-card {
+        padding: 1rem 1.25rem;
+        border-bottom: 1px solid rgba(0,14,71,.06);
+        cursor: pointer;
+        transition: background .2s;
+        display: flex;
+        gap: .85rem;
+        align-items: flex-start;
+    }
+    .store-card:hover { background: rgba(0,14,71,.03); }
+    .store-card.highlighted { background: rgba(184,34,58,.05); border-left: 3px solid var(--red); }
+
+    .store-chain-badge {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: .55rem;
+        font-weight: 800;
+        letter-spacing: .04em;
+        text-align: center;
+        line-height: 1.1;
+        color: #fff;
+        margin-top: 2px;
+    }
+    .badge-pnp       { background: var(--red); }
+    .badge-checkers  { background: #007b40; }
+    .badge-woolworths{ background: #1a1a1a; }
+    .badge-spar      { background: #dc1d2e; }
+    .badge-dischem   { background: #005ba1; }
+
+    .store-card-info { flex: 1; min-width: 0; }
+    .store-card-name {
+        font-size: .88rem; font-weight: 700;
+        color: var(--blue); line-height: 1.2;
+        margin-bottom: .25rem;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .store-card-address { font-size: .75rem; font-weight: 300; color: var(--dark-grey); line-height: 1.4; }
+    .store-card-city    { font-size: .7rem; font-weight: 600; color: var(--dark-grey); margin-top: .2rem; }
+    .store-card-dir {
+        font-size: .65rem; font-weight: 700;
+        letter-spacing: .1em; text-transform: uppercase;
+        color: var(--red); margin-top: .45rem;
+        display: inline-flex; align-items: center; gap: .3rem;
+        transition: gap .2s;
+    }
+    .store-card-dir:hover { gap: .5rem; }
+
+    .no-results {
+        padding: 3rem 1.25rem;
+        text-align: center;
+    }
+    .no-results p {
+        font-size: .9rem; color: var(--dark-grey); line-height: 1.6;
+    }
+    .no-results strong { color: var(--blue); }
+
+    /* =====================================================
+       MAP
+    ===================================================== */
+    #map {
+        width: 100%;
+        height: 100%;
+        min-height: 500px;
+        z-index: 1;
+    }
+
+    @media (max-width: 900px) {
+        #map { height: 420px; }
+    }
+
+    /* Custom Leaflet marker */
+    .nawty-marker {
+        width: 32px;
+        height: 32px;
+        border-radius: 50% 50% 50% 0;
+        transform: rotate(-45deg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 12px rgba(0,0,0,.3);
+        border: 2px solid rgba(255,255,255,.8);
+        transition: transform .2s;
+    }
+    .nawty-marker span {
+        transform: rotate(45deg);
+        font-size: .52rem;
+        font-weight: 800;
+        color: #fff;
+        letter-spacing: .02em;
+        line-height: 1;
+        text-align: center;
+    }
+    .nawty-marker.m-pnp       { background: var(--red); }
+    .nawty-marker.m-checkers  { background: #007b40; }
+    .nawty-marker.m-woolworths{ background: #1a1a1a; }
+    .nawty-marker.m-spar      { background: #dc1d2e; }
+    .nawty-marker.m-dischem   { background: #005ba1; }
+
+    /* Leaflet popup override */
+    .leaflet-popup-content-wrapper {
+        border-radius: 0 !important;
+        box-shadow: 0 8px 30px rgba(0,14,71,.18) !important;
+        border: none !important;
+        padding: 0 !important;
+    }
+    .leaflet-popup-content { margin: 0 !important; width: 240px !important; }
+    .leaflet-popup-tip { background: #fff !important; }
+
+    .popup-inner {
+        padding: 1.1rem 1.25rem 1rem;
+        font-family: 'Outfit', sans-serif;
+    }
+    .popup-chain {
+        font-size: .6rem; font-weight: 800; letter-spacing: .2em;
+        text-transform: uppercase; margin-bottom: .35rem;
+    }
+    .popup-name { font-size: .95rem; font-weight: 800; color: var(--blue); line-height: 1.2; margin-bottom: .35rem; }
+    .popup-address { font-size: .75rem; font-weight: 300; color: var(--dark-grey); line-height: 1.5; margin-bottom: .75rem; }
+    .popup-footer { display: flex; gap: .6rem; border-top: 1px solid var(--light-grey); padding-top: .75rem; }
+    .popup-btn {
+        flex: 1; padding: .45rem .5rem;
+        font-family: 'Outfit', sans-serif;
+        font-size: .62rem; font-weight: 700;
+        letter-spacing: .1em; text-transform: uppercase;
+        text-align: center; cursor: pointer; border: none;
+        transition: background .2s, color .2s;
+    }
+    .popup-btn-dir  { background: var(--blue); color: #fff; }
+    .popup-btn-dir:hover  { background: var(--red); }
+    .popup-btn-close{ background: var(--light-grey); color: var(--blue); }
+    .popup-btn-close:hover { background: var(--dark-grey); color: #fff; }
+
+    /* =====================================================
+       BOTTOM STRIP
+    ===================================================== */
+    .locator-footer-strip {
+        background: var(--blue);
+        padding: 3rem 5%;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+    }
+    .strip-text h3 { font-size: clamp(1.2rem,3vw,2rem); font-weight: 800; color: #fff; letter-spacing: -.03em; line-height: 1.1; }
+    .strip-text p  { font-size: .85rem; color: rgba(255,255,255,.4); margin-top: .35rem; }
+    .btn-strip {
+        padding: .85rem 2.5rem;
+        background: #fff; color: var(--blue);
+        font-family: 'Outfit', sans-serif;
+        font-size: .78rem; font-weight: 700;
+        letter-spacing: .15em; text-transform: uppercase;
+        border: none; cursor: pointer;
+        border-radius: 9999px;
+        transition: background .3s, color .3s;
+        white-space: nowrap;
+    }
+    .btn-strip:hover { background: var(--red); color: #fff; }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="site-nav on-hero">
+    <a href="index.html" class="nav-logo"><img src="nawtycans/nawtylogo.png" alt="Nawty Water"></a>
+    <ul class="nav-links">
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="index.html#products">Flavours</a></li>
+        <li><a href="store-locator.html" class="nav-active">Find a Store</a></li>
+        <li><a href="#" class="nav-cta">Shop Now</a></li>
+    </ul>
+</nav>
+
+<!-- PAGE HEADER -->
+<div class="page-header">
+    <p class="page-header-eyebrow">Where to Buy</p>
+    <h1 class="page-header-title">
+        <span class="page-header-line">Find a</span>
+        <span class="page-header-line"><em>Store</em></span>
+    </h1>
+    <p class="page-header-sub">Major retailers across South Africa</p>
+</div>
+
+<!-- LOCATOR -->
+<div class="locator-wrap">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-controls">
+            <div class="search-box">
+                <span class="search-icon">⌕</span>
+                <input type="text" id="search-input" placeholder="Search by city or store name…" autocomplete="off">
+            </div>
+            <div class="filter-chips" id="filter-chips">
+                <button class="chip active" data-chain="all">All Stores</button>
+                <button class="chip chain-pnp" data-chain="Pick n Pay">Pick n Pay</button>
+                <button class="chip chain-checkers" data-chain="Checkers">Checkers</button>
+                <button class="chip chain-woolworths" data-chain="Woolworths">Woolworths</button>
+                <button class="chip chain-spar" data-chain="SPAR">SPAR</button>
+                <button class="chip chain-dischem" data-chain="DisChem">DisChem</button>
+            </div>
+        </div>
+        <div class="results-count" id="results-count">Showing 0 stores</div>
+        <div class="store-list" id="store-list"></div>
+    </aside>
+
+    <!-- MAP -->
+    <div id="map"></div>
+
+</div>
+
+<!-- BOTTOM STRIP -->
+<div class="locator-footer-strip">
+    <div class="strip-text">
+        <h3>Can't find a store near you?</h3>
+        <p>Contact us and we'll help you find Nawty Water in your area.</p>
+    </div>
+    <a href="mailto:info@nawtywater.co.za" class="btn-strip">Contact Us</a>
+</div>
+
+<script>
+'use strict';
+
+/* =====================================================
+   ENTRANCE ANIMATIONS
+===================================================== */
+function runEntrance() {
+    const tl = gsap.timeline({ defaults: { ease: "power4.out", duration: 1.2 }});
+
+    tl.to(".page-header-eyebrow", { opacity: 1, y: 0, duration: 1 }, 0.2)
+      .to(".page-header-line", { opacity: 1, y: 0, stagger: 0.15 }, 0.4)
+      .to(".page-header-sub", { opacity: 1, duration: 1 }, 0.8)
+      .to(".locator-wrap", { opacity: 1, y: 0, duration: 1 }, 1.0);
+}
+
+// Set initial states for animation
+gsap.set(".locator-wrap", { opacity: 0, y: 30 });
+
+window.addEventListener('scroll', () => {
+    const nav = document.querySelector('.site-nav');
+    if (window.scrollY > 50) {
+        nav.classList.add('solid');
+    } else {
+        nav.classList.remove('solid');
+    }
+});
+
+window.addEventListener('DOMContentLoaded', runEntrance);
+
+/* =====================================================
+   STORE DATA — all major SA stockists
+   Update lat/lng if more precise coordinates are known
+===================================================== */
+const STORES = [
+    /* ─── GAUTENG ─────────────────────────────────── */
+    { chain:"Pick n Pay", name:"Pick n Pay Sandton City",         address:"Sandton City Shopping Centre, Sandton",               city:"Sandton",        province:"Gauteng",       lat:-26.1069, lng:28.0565 },
+    { chain:"Pick n Pay", name:"Pick n Pay Hyde Park Corner",     address:"Hyde Park Corner, Jan Smuts Ave, Hyde Park",          city:"Hyde Park",      province:"Gauteng",       lat:-26.1130, lng:28.0401 },
+    { chain:"Pick n Pay", name:"Pick n Pay Menlyn Park",          address:"Menlyn Park Shopping Centre, Atterbury Rd, Menlyn",   city:"Pretoria",       province:"Gauteng",       lat:-25.7826, lng:28.2764 },
+    { chain:"Pick n Pay", name:"Pick n Pay Eastgate",             address:"Eastgate Shopping Centre, Bradford Rd, Bedfordview",  city:"Bedfordview",    province:"Gauteng",       lat:-26.1749, lng:28.1202 },
+    { chain:"Pick n Pay", name:"Pick n Pay Mall of Africa",       address:"Mall of Africa, Waterfall City, Midrand",             city:"Midrand",        province:"Gauteng",       lat:-25.9991, lng:28.1131 },
+    { chain:"Checkers",   name:"Checkers Fourways Mall",          address:"Fourways Mall, William Nicol Dr, Fourways",           city:"Fourways",       province:"Gauteng",       lat:-26.0146, lng:28.0093 },
+    { chain:"Checkers",   name:"Checkers Greenstone Mall",        address:"Greenstone Shopping Centre, Modderfontein Rd",        city:"Greenstone",     province:"Gauteng",       lat:-26.1228, lng:28.1298 },
+    { chain:"Checkers",   name:"Checkers Brooklyn Mall",          address:"Brooklyn Mall, Fehrsen St, Brooklyn, Pretoria",       city:"Pretoria",       province:"Gauteng",       lat:-25.7748, lng:28.2385 },
+    { chain:"Checkers",   name:"Checkers Clearwater Mall",        address:"Clearwater Mall, Hendrik Potgieter Rd, Roodepoort",   city:"Roodepoort",     province:"Gauteng",       lat:-26.1355, lng:27.9143 },
+    { chain:"Woolworths", name:"Woolworths Rosebank Mall",        address:"Rosebank Mall, Bath Ave, Rosebank",                   city:"Rosebank",       province:"Gauteng",       lat:-26.1455, lng:28.0415 },
+    { chain:"Woolworths", name:"Woolworths Waterfall City",       address:"Waterfall City Shopping Centre, Bekker Rd, Midrand",  city:"Midrand",        province:"Gauteng",       lat:-25.9995, lng:28.1149 },
+    { chain:"Woolworths", name:"Woolworths Gateway Centurion",    address:"Centurion Mall, Rabie St, Centurion",                 city:"Centurion",      province:"Gauteng",       lat:-25.8576, lng:28.1961 },
+    { chain:"SPAR",       name:"SPAR Morningside",                address:"Morningside Shopping Centre, Rivonia Rd, Morningside", city:"Morningside",  province:"Gauteng",       lat:-26.0726, lng:28.0630 },
+    { chain:"SPAR",       name:"SPAR Bryanston",                  address:"Bryanston Shopping Centre, Ballyclare Dr, Bryanston", city:"Bryanston",      province:"Gauteng",       lat:-26.0556, lng:28.0230 },
+    { chain:"DisChem",    name:"DisChem Sandton City",            address:"Sandton City, Sandton, Johannesburg",                 city:"Sandton",        province:"Gauteng",       lat:-26.1073, lng:28.0573 },
+    { chain:"DisChem",    name:"DisChem Mall of Africa",          address:"Mall of Africa, Waterfall City, Midrand",             city:"Midrand",        province:"Gauteng",       lat:-25.9988, lng:28.1136 },
+
+    /* ─── WESTERN CAPE ─────────────────────────────── */
+    { chain:"Checkers",   name:"Checkers V&A Waterfront",         address:"Victoria & Alfred Waterfront, Cape Town",             city:"Cape Town",      province:"Western Cape",  lat:-33.9022, lng:18.4206 },
+    { chain:"Checkers",   name:"Checkers Constantia Village",     address:"Constantia Village Shopping Centre, Constantia",      city:"Cape Town",      province:"Western Cape",  lat:-34.0218, lng:18.4581 },
+    { chain:"Checkers",   name:"Checkers Tyger Valley",           address:"Tyger Valley Centre, Willie van Schoor Ave, Bellville",city:"Bellville",     province:"Western Cape",  lat:-33.8698, lng:18.6317 },
+    { chain:"Pick n Pay", name:"Pick n Pay Canal Walk",           address:"Canal Walk Shopping Centre, Century City",            city:"Cape Town",      province:"Western Cape",  lat:-33.8683, lng:18.5112 },
+    { chain:"Pick n Pay", name:"Pick n Pay Somerset Mall",        address:"Somerset Mall, N2 Highway, Somerset West",            city:"Somerset West",  province:"Western Cape",  lat:-34.0720, lng:18.8501 },
+    { chain:"Pick n Pay", name:"Pick n Pay Garden Route Mall",    address:"Garden Route Mall, N2 Highway, George",              city:"George",         province:"Western Cape",  lat:-33.9733, lng:22.4680 },
+    { chain:"Woolworths", name:"Woolworths Cavendish Square",     address:"Cavendish Square, Dreyer St, Claremont",              city:"Cape Town",      province:"Western Cape",  lat:-33.9620, lng:18.4695 },
+    { chain:"Woolworths", name:"Woolworths Stellenbosch Square",  address:"Stellenbosch Square, Adam Tas Rd, Stellenbosch",      city:"Stellenbosch",   province:"Western Cape",  lat:-33.9467, lng:18.8499 },
+    { chain:"SPAR",       name:"SPAR Sea Point",                  address:"Main Rd, Sea Point, Cape Town",                      city:"Cape Town",      province:"Western Cape",  lat:-33.9210, lng:18.3867 },
+    { chain:"SPAR",       name:"SPAR Franschhoek",                address:"Huguenot Rd, Franschhoek",                           city:"Franschhoek",    province:"Western Cape",  lat:-33.9197, lng:19.1208 },
+    { chain:"DisChem",    name:"DisChem Canal Walk",              address:"Canal Walk Shopping Centre, Century City, Cape Town", city:"Cape Town",      province:"Western Cape",  lat:-33.8691, lng:18.5116 },
+
+    /* ─── KWAZULU-NATAL ─────────────────────────────── */
+    { chain:"Pick n Pay", name:"Pick n Pay Gateway Theatre",      address:"Gateway Theatre of Shopping, Umhlanga Ridge",         city:"Umhlanga",       province:"KwaZulu-Natal", lat:-29.7296, lng:31.0465 },
+    { chain:"Pick n Pay", name:"Pick n Pay Musgrave Centre",      address:"Musgrave Centre, Musgrave Rd, Berea, Durban",         city:"Durban",         province:"KwaZulu-Natal", lat:-29.8643, lng:30.9897 },
+    { chain:"Checkers",   name:"Checkers Pavilion Mall",          address:"Pavilion Shopping Centre, Jack Martens Dr, Westville",city:"Durban",         province:"KwaZulu-Natal", lat:-29.8674, lng:30.9776 },
+    { chain:"Checkers",   name:"Checkers Shelly Beach",           address:"Shelly Centre, Shelly Beach, South Coast",           city:"Shelly Beach",   province:"KwaZulu-Natal", lat:-30.8138, lng:30.3883 },
+    { chain:"Woolworths", name:"Woolworths La Lucia Mall",        address:"La Lucia Mall, William Campbell Dr, La Lucia",        city:"Durban North",   province:"KwaZulu-Natal", lat:-29.7542, lng:31.0421 },
+    { chain:"Woolworths", name:"Woolworths Ballito Junction",     address:"Ballito Junction Shopping Centre, Ballito",           city:"Ballito",        province:"KwaZulu-Natal", lat:-29.5440, lng:31.2123 },
+    { chain:"SPAR",       name:"SPAR Westville",                  address:"Westwood Mall, Jan Hofmeyr Rd, Westville",           city:"Westville",      province:"KwaZulu-Natal", lat:-29.8460, lng:30.9370 },
+    { chain:"DisChem",    name:"DisChem Gateway",                 address:"Gateway Theatre of Shopping, Umhlanga",              city:"Umhlanga",       province:"KwaZulu-Natal", lat:-29.7301, lng:31.0471 },
+
+    /* ─── EASTERN CAPE ─────────────────────────────── */
+    { chain:"Pick n Pay", name:"Pick n Pay Greenacres",           address:"Greenacres Shopping Centre, Cape Rd, Gqeberha",      city:"Gqeberha",       province:"Eastern Cape",  lat:-33.9593, lng:25.5806 },
+    { chain:"Pick n Pay", name:"Pick n Pay Vincent Park",         address:"Vincent Park Centre, Devereux Ave, East London",     city:"East London",    province:"Eastern Cape",  lat:-32.9993, lng:27.9014 },
+    { chain:"Checkers",   name:"Checkers Walmer Park",            address:"Walmer Park Shopping Centre, Cape Rd, Gqeberha",     city:"Gqeberha",       province:"Eastern Cape",  lat:-33.9851, lng:25.5856 },
+    { chain:"Woolworths", name:"Woolworths Hemingways Mall",      address:"Hemingways Mall, Bonza Bay Rd, East London",         city:"East London",    province:"Eastern Cape",  lat:-32.9993, lng:27.8873 },
+    { chain:"SPAR",       name:"SPAR Beacon Bay",                 address:"Beacon Bay Retail Park, Bonza Bay Rd, East London",  city:"East London",    province:"Eastern Cape",  lat:-32.9901, lng:27.9191 },
+
+    /* ─── FREE STATE ─────────────────────────────── */
+    { chain:"Pick n Pay", name:"Pick n Pay Mimosa Mall",          address:"Mimosa Mall, Kellner St, Bloemfontein",              city:"Bloemfontein",   province:"Free State",    lat:-29.1191, lng:26.2130 },
+    { chain:"Checkers",   name:"Checkers Bloem Plaza",            address:"Bloem Plaza Shopping Centre, Nelson Mandela Dr",     city:"Bloemfontein",   province:"Free State",    lat:-29.1133, lng:26.2143 },
+    { chain:"Woolworths", name:"Woolworths Loch Logan Waterfront",address:"Loch Logan Waterfront, Henry St, Bloemfontein",      city:"Bloemfontein",   province:"Free State",    lat:-29.1116, lng:26.1969 },
+    { chain:"SPAR",       name:"SPAR Fleurdal Mall",              address:"Fleurdal Mall, Du Plessis Rd, Bloemfontein",         city:"Bloemfontein",   province:"Free State",    lat:-29.0871, lng:26.1927 },
+
+    /* ─── LIMPOPO ─────────────────────────────── */
+    { chain:"Pick n Pay", name:"Pick n Pay Mall of the North",    address:"Mall of the North, N1 Highway, Polokwane",           city:"Polokwane",      province:"Limpopo",       lat:-23.8955, lng:29.4495 },
+    { chain:"Checkers",   name:"Checkers Savannah Mall",          address:"Savannah Mall, Dorp St, Polokwane",                  city:"Polokwane",      province:"Limpopo",       lat:-23.8973, lng:29.4533 },
+    { chain:"SPAR",       name:"SPAR Tzaneen",                    address:"Tzaneen Mall, Agatha St, Tzaneen",                   city:"Tzaneen",        province:"Limpopo",       lat:-23.8307, lng:30.1644 },
+
+    /* ─── MPUMALANGA ─────────────────────────────── */
+    { chain:"Pick n Pay", name:"Pick n Pay Crossing Shopping Centre", address:"Crossing Shopping Centre, N4 Highway, Nelspruit", city:"Nelspruit",     province:"Mpumalanga",    lat:-25.4753, lng:30.9735 },
+    { chain:"Checkers",   name:"Checkers Emalahleni Mall",        address:"Emalahleni Mall, Mandela Ave, Emalahleni",           city:"Emalahleni",     province:"Mpumalanga",    lat:-25.8771, lng:29.2345 },
+    { chain:"SPAR",       name:"SPAR White River",                address:"White River Square, Main St, White River",           city:"White River",    province:"Mpumalanga",    lat:-25.3307, lng:31.0069 },
+
+    /* ─── NORTH WEST ─────────────────────────────── */
+    { chain:"Pick n Pay", name:"Pick n Pay Mafikeng Mall",        address:"Mafikeng Mall, Nelson Mandela Dr, Mahikeng",         city:"Mahikeng",       province:"North West",    lat:-25.8644, lng:25.6416 },
+    { chain:"Checkers",   name:"Checkers Rustenburg Mall",        address:"Rustenburg Mall, Beyers Naudé Dr, Rustenburg",      city:"Rustenburg",     province:"North West",    lat:-25.6607, lng:27.2433 },
+
+    /* ─── NORTHERN CAPE ─────────────────────────── */
+    { chain:"Pick n Pay", name:"Pick n Pay Kimberley Mall",       address:"Kimberley Mall, Memorial Rd, Kimberley",             city:"Kimberley",      province:"Northern Cape", lat:-28.7323, lng:24.7718 },
+    { chain:"Checkers",   name:"Checkers Upington",               address:"Upington Shopping Centre, Schröder St, Upington",   city:"Upington",       province:"Northern Cape", lat:-28.4464, lng:21.2488 },
+];
+
+/* =====================================================
+   CHAIN COLOUR CONFIG
+===================================================== */
+const CHAIN_STYLES = {
+    "Pick n Pay":  { badge:"PnP",  cls:"pnp",        color:"#b8223a" },
+    "Checkers":    { badge:"CHK",  cls:"checkers",   color:"#007b40" },
+    "Woolworths":  { badge:"WW",   cls:"woolworths", color:"#1a1a1a" },
+    "SPAR":        { badge:"SPAR", cls:"spar",       color:"#dc1d2e" },
+    "DisChem":     { badge:"DC",   cls:"dischem",    color:"#005ba1" },
+};
+
+/* =====================================================
+   STATE
+===================================================== */
+let activeChain  = "all";
+let searchQuery  = "";
+let markers      = {};   // index → Leaflet marker
+let activeIndex  = null;
+
+/* =====================================================
+   MAP INIT
+===================================================== */
+const map = L.map('map', {
+    center: [-29.0, 25.0],
+    zoom: 5,
+    zoomControl: true,
+    attributionControl: true,
+});
+
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://carto.com/">CARTO</a> &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+    subdomains: 'abcd',
+    maxZoom: 19
+}).addTo(map);
+
+/* =====================================================
+   BUILD MARKERS
+===================================================== */
+function makeIcon(chain) {
+    const s = CHAIN_STYLES[chain] || { badge:'?', cls:'pnp', color:'#888' };
+    return L.divIcon({
+        className: '',
+        html: `<div class="nawty-marker m-${s.cls}"><span>${s.badge}</span></div>`,
+        iconSize: [32, 32],
+        iconAnchor: [16, 32],
+        popupAnchor: [0, -34],
+    });
+}
+
+STORES.forEach((store, i) => {
+    const m = L.marker([store.lat, store.lng], { icon: makeIcon(store.chain) }).addTo(map);
+
+    m.bindPopup(buildPopupHTML(store, i), { maxWidth: 260, className: 'nawty-popup' });
+
+    m.on('click', () => {
+        highlightCard(i);
+    });
+
+    markers[i] = m;
+});
+
+function buildPopupHTML(store, i) {
+    const s = CHAIN_STYLES[store.chain] || {};
+    const mapsURL = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(store.name + ', ' + store.address)}`;
+    return `
+        <div class="popup-inner">
+            <div class="popup-chain" style="color:${s.color}">${store.chain}</div>
+            <div class="popup-name">${store.name}</div>
+            <div class="popup-address">${store.address}<br>${store.city}, ${store.province}</div>
+            <div class="popup-footer">
+                <a href="${mapsURL}" target="_blank" rel="noopener" class="popup-btn popup-btn-dir">Directions →</a>
+                <button class="popup-btn popup-btn-close" onclick="map.closePopup()">Close</button>
+            </div>
+        </div>`;
+}
+
+/* =====================================================
+   RENDER SIDEBAR LIST
+===================================================== */
+function getFilteredStores() {
+    return STORES.map((s, i) => ({ ...s, _i: i })).filter(s => {
+        const matchChain  = activeChain === "all" || s.chain === activeChain;
+        const q = searchQuery.toLowerCase();
+        const matchSearch = !q ||
+            s.name.toLowerCase().includes(q) ||
+            s.city.toLowerCase().includes(q) ||
+            s.province.toLowerCase().includes(q) ||
+            s.address.toLowerCase().includes(q);
+        return matchChain && matchSearch;
+    });
+}
+
+function renderList() {
+    const filtered = getFilteredStores();
+    const listEl   = document.getElementById('store-list');
+    const countEl  = document.getElementById('results-count');
+
+    // Show/hide markers
+    STORES.forEach((_, i) => {
+        const vis = filtered.some(s => s._i === i);
+        const m = markers[i];
+        if (vis) { if (!map.hasLayer(m)) map.addLayer(m); }
+        else      { if (map.hasLayer(m)) map.removeLayer(m); }
+    });
+
+    countEl.textContent = `Showing ${filtered.length} store${filtered.length !== 1 ? 's' : ''}`;
+
+    if (!filtered.length) {
+        listEl.innerHTML = `<div class="no-results"><p>No stores found.<br><strong>Try a different search or filter.</strong></p></div>`;
+        return;
+    }
+
+    // Group by province
+    const byProvince = {};
+    const PROVINCE_ORDER = ["Gauteng","Western Cape","KwaZulu-Natal","Eastern Cape","Free State","Limpopo","Mpumalanga","North West","Northern Cape"];
+    filtered.forEach(s => {
+        if (!byProvince[s.province]) byProvince[s.province] = [];
+        byProvince[s.province].push(s);
+    });
+
+    let html = '';
+    PROVINCE_ORDER.forEach(prov => {
+        if (!byProvince[prov]) return;
+        html += `<div class="province-group">
+            <div class="province-label">${prov}</div>`;
+        byProvince[prov].forEach(s => {
+            const cs = CHAIN_STYLES[s.chain] || {};
+            const mapsURL = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(s.name + ', ' + s.address)}`;
+            html += `
+            <div class="store-card${activeIndex === s._i ? ' highlighted' : ''}" data-index="${s._i}">
+                <div class="store-chain-badge badge-${cs.cls}">${cs.badge}</div>
+                <div class="store-card-info">
+                    <div class="store-card-name">${s.name}</div>
+                    <div class="store-card-address">${s.address}</div>
+                    <div class="store-card-city">${s.city} · ${s.province}</div>
+                    <a href="${mapsURL}" target="_blank" rel="noopener" class="store-card-dir" onclick="event.stopPropagation()">Get Directions →</a>
+                </div>
+            </div>`;
+        });
+        html += `</div>`;
+    });
+
+    listEl.innerHTML = html;
+
+    // Card click → fly to marker
+    listEl.querySelectorAll('.store-card').forEach(card => {
+        card.addEventListener('click', () => {
+            const i = parseInt(card.dataset.index);
+            flyToStore(i);
+        });
+    });
+}
+
+/* =====================================================
+   INTERACTIONS
+===================================================== */
+function flyToStore(i) {
+    activeIndex = i;
+    const s = STORES[i];
+    map.flyTo([s.lat, s.lng], 15, { animate: true, duration: .8 });
+    setTimeout(() => markers[i].openPopup(), 850);
+    highlightCard(i);
+}
+
+function highlightCard(i) {
+    activeIndex = i;
+    document.querySelectorAll('.store-card').forEach(c => {
+        c.classList.toggle('highlighted', parseInt(c.dataset.index) === i);
+    });
+    // Scroll card into view
+    const card = document.querySelector(`.store-card[data-index="${i}"]`);
+    if (card) card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+// Search
+document.getElementById('search-input').addEventListener('input', e => {
+    searchQuery = e.target.value.trim();
+    renderList();
+});
+
+// Chain filter chips
+document.getElementById('filter-chips').addEventListener('click', e => {
+    const chip = e.target.closest('.chip');
+    if (!chip) return;
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    activeChain = chip.dataset.chain;
+    activeIndex = null;
+    renderList();
+});
+
+/* =====================================================
+   INIT
+===================================================== */
+// Pre-filter by ?chain= query parameter (e.g. from index.html brands section)
+const urlParams = new URLSearchParams(window.location.search);
+const chainParam = urlParams.get('chain');
+if (chainParam) {
+    const matchingChip = document.querySelector(`.chip[data-chain="${chainParam}"]`);
+    if (matchingChip) {
+        document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+        matchingChip.classList.add('active');
+        activeChain = chainParam;
+    }
+}
+renderList();
+</script>
+</body>
+</html>

@@ -1,0 +1,1712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nawty Water | South African Hard Seltzer</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/bundled/lenis.min.js"></script>
+
+    <style>
+    /* =====================================================
+       ROOT VARIABLES
+    ===================================================== */
+    :root {
+        --blue:          #000e47;
+        --grey:          #e9e7dc;
+        --dark-grey:     #686868;
+        --light-grey:    #d9d9d9;
+        --red:           #b8223a;
+        --orange:        #c85814;
+        --pink:          #cf322f;
+        --dusty-rose:    #d39ca2;
+        --outfit:        "Outfit";
+
+        /* Flavour brand colours */
+        --strawberry:    #e8354d;
+        --passion-gold:  #c9920a;
+        --passion-purple:#5b0eb3;
+        --lychee-blue:   #1a8fbf;
+
+        /* Beach palette */
+        --ocean:         #008FB5;
+        --ocean-light:   #00BFDF;
+        --sky:           #C8F0FA;
+        --sand:          #FFF9F0;
+        --sand-warm:     #FFF3E0;
+        --coral:         #eb4f91;
+        --tropical-teal: #00C9D4;
+        --citrus:        #FFB700;
+    }
+
+    body::before {
+        content:"xs:375px,sm:576px,md:768px,lg:1025px,xl:1200px,xxl:1440px";
+        display:none;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-text-size-adjust: 100%; }
+    html.lenis, html.lenis body { height: auto; }
+
+    @media (max-width: 767px) {
+        body { -webkit-overflow-scrolling: touch; overflow-x: hidden; overflow-y: auto; position: relative; }
+    }
+
+    html, body { -webkit-overflow-scrolling: touch; touch-action: manipulation; }
+
+    body {
+        background-color: var(--sand);
+        font-family: 'Outfit', sans-serif;
+        color: var(--blue);
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        overflow: auto;
+        overscroll-behavior: none;
+    }
+
+    img { display: block; max-width: 100%; }
+    a   { text-decoration: none; color: inherit; }
+
+    /* =====================================================
+       AGE GATE
+    ===================================================== */
+    #age-gate {
+        position: fixed;
+        inset: 0;
+        background: linear-gradient(160deg, #0077A8 0%, #00B8D9 40%, #7FE3F5 70%, #FFF5E6 100%);
+        z-index: 9999;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1.5rem;
+        transition: opacity .9s cubic-bezier(.76,0,.24,1), transform .9s cubic-bezier(.76,0,.24,1);
+    }
+
+    #age-gate.exit { opacity: 0; transform: translateY(-6%); pointer-events: none; }
+
+    .gate-logo { display:flex; justify-content:center; }
+    .gate-logo img { height:clamp(120px,20vw,200px); width:auto; filter:brightness(0) invert(1); }
+
+    .gate-sub {
+        font-size: clamp(.65rem,1.5vw,.85rem);
+        font-weight: 500;
+        letter-spacing: .35em;
+        text-transform: uppercase;
+        color: rgba(255,255,255,.7);
+    }
+
+    .gate-card {
+        width: clamp(300px,88vw,480px);
+        background: rgba(255,255,255,.85);
+        backdrop-filter: blur(20px);
+        border-radius: 1.5rem;
+        padding: clamp(2rem,5vw,3rem) clamp(1.5rem,4vw,2.5rem);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 1.75rem;
+        box-shadow: 0 24px 60px rgba(0,100,140,.2);
+    }
+
+    .gate-question { font-size:clamp(1rem,2.5vw,1.3rem); font-weight:600; color:var(--blue); line-height:1.4; text-align:center; }
+
+    .gate-btns { display:flex; gap:.875rem; }
+
+    .btn-gate {
+        padding:.8rem 2.25rem;
+        font-family:'Outfit',sans-serif;
+        font-size:.8rem; font-weight:700;
+        letter-spacing:.12em; text-transform:uppercase;
+        cursor:pointer; border:none;
+        border-radius:9999px;
+        transition:background .3s, transform .2s, box-shadow .3s;
+    }
+    .btn-gate--yes { background:var(--ocean); color:#fff; box-shadow:0 8px 24px rgba(0,143,181,.4); }
+    .btn-gate--yes:hover { background:var(--ocean-light); transform:translateY(-2px); box-shadow:0 12px 30px rgba(0,143,181,.5); }
+    .btn-gate--no  { background:rgba(0,14,71,.08); color:var(--blue); }
+    .btn-gate--no:hover  { background:rgba(0,14,71,.14); }
+
+    .gate-small { font-size:.7rem; color:var(--dark-grey); line-height:1.6; max-width:300px; text-align:center; }
+
+    /* =====================================================
+       NAVIGATION
+    ===================================================== */
+    .site-nav {
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1.6rem 5%;
+        transition: background .4s, padding .4s, backdrop-filter .4s;
+    }
+    .site-nav.solid {
+        background: rgba(255,249,240,.94);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        padding: 1rem 5%;
+        box-shadow: 0 2px 24px rgba(0,14,71,.07);
+    }
+
+    /* nav over the ocean-blue hero — white text */
+    .site-nav.on-hero .nav-logo,
+    .site-nav.on-hero .nav-links a { color: #fff; }
+    .site-nav.on-hero .nav-cta { background:#fff !important; color:var(--ocean) !important; }
+    .site-nav.on-hero .nav-cta:hover { background:var(--coral) !important; color:#fff !important; }
+    .site-nav.solid.on-hero .nav-logo,
+    .site-nav.solid.on-hero .nav-links a { color: var(--blue); }
+    .site-nav.solid.on-hero .nav-cta { background:var(--ocean) !important; color:#fff !important; }
+
+    .nav-logo { display:inline-flex; align-items:center; }
+    .nav-logo img { height:72px; width:auto; display:block; }
+    @media (max-width:768px) { .nav-logo img { height:56px; } }
+
+    .nav-links { display:flex; gap:2.5rem; list-style:none; align-items:center; }
+
+    /* Nav link base */
+    .nav-links a {
+        font-size:.78rem; font-weight:600; letter-spacing:.12em; text-transform:uppercase;
+        color:var(--blue);
+        position:relative;
+        display:inline-block;
+        transform:translateY(0);
+        transition:color .3s cubic-bezier(0.25,0.46,0.45,0.94),
+                   transform .3s cubic-bezier(0.25,0.46,0.45,0.94);
+    }
+    .nav-links a:hover {
+        color:var(--ocean);
+        transform:translateY(-2px);
+    }
+
+    /* Animated underline — slides in from left, out to right */
+    .nav-links a:not(.nav-cta)::after {
+        content:'';
+        position:absolute;
+        bottom:-3px; left:0;
+        width:100%; height:2px;
+        background:var(--ocean);
+        border-radius:2px;
+        transform:scaleX(0);
+        transform-origin:left center;
+        transition:transform .35s cubic-bezier(0.25,0.46,0.45,0.94);
+    }
+    .nav-links a:not(.nav-cta):hover::after { transform:scaleX(1); }
+    .nav-links a:not(.nav-cta):not(:hover)::after {
+        transform:scaleX(0);
+        transform-origin:right center;
+    }
+
+    /* On-hero state — underline and lift are white */
+    .site-nav.on-hero .nav-links a:not(.nav-cta)::after { background:#fff; }
+    .site-nav.on-hero .nav-links a:hover { color:#fff; }
+
+    /* Solid state — underline is --ocean */
+    .site-nav.solid .nav-links a:not(.nav-cta)::after { background:var(--ocean); }
+    .site-nav.solid .nav-links a:hover { color:var(--ocean); }
+
+    /* CTA button — glow pulse + scale on hover */
+    .nav-cta {
+        padding:.6rem 1.6rem;
+        background:var(--ocean) !important; color:#fff !important;
+        border-radius:9999px;
+        transform:scale(1);
+        transition:background .3s cubic-bezier(0.25,0.46,0.45,0.94),
+                   transform .3s cubic-bezier(0.25,0.46,0.45,0.94),
+                   box-shadow .3s cubic-bezier(0.25,0.46,0.45,0.94) !important;
+    }
+    .nav-cta:hover {
+        background:var(--coral) !important;
+        transform:translateY(0) scale(1.04) !important;
+        box-shadow:0 0 0 4px rgba(0,143,181,.2), 0 8px 24px rgba(0,143,181,.35) !important;
+    }
+
+    /* Hamburger button */
+    .nav-hamburger {
+        display:none;
+        flex-direction:column;
+        justify-content:center;
+        gap:5px;
+        width:36px; height:36px;
+        background:none; border:none;
+        cursor:pointer; padding:4px;
+        z-index:1100;
+    }
+    .nav-hamburger span {
+        display:block; width:22px; height:2px;
+        background:#fff;
+        border-radius:2px;
+        transition:transform .35s ease, opacity .3s ease, width .3s ease;
+        transform-origin:center;
+    }
+    .site-nav.solid .nav-hamburger span { background:var(--blue); }
+    .nav-hamburger.open span { background:#fff !important; }
+    .nav-hamburger.open span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
+    .nav-hamburger.open span:nth-child(2) { opacity:0; width:0; }
+    .nav-hamburger.open span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
+
+    /* Mobile nav drawer */
+    .nav-mobile-drawer {
+        position:fixed;
+        top:0; left:0; right:0; bottom:0;
+        background:linear-gradient(160deg, #0077A8 0%, #00A8CC 50%, #FFF8EE 100%);
+        z-index:999;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        justify-content:center;
+        gap:2rem;
+        opacity:0;
+        pointer-events:none;
+        transition:opacity .4s ease;
+    }
+    .nav-mobile-drawer.open {
+        opacity:1;
+        pointer-events:all;
+    }
+    .nav-mobile-drawer a {
+        font-size:clamp(1.5rem,8vw,2.5rem);
+        font-weight:800; letter-spacing:-.02em;
+        text-transform:uppercase; color:#fff;
+        transition:color .2s, transform .2s;
+    }
+    .nav-mobile-drawer a:hover { color:var(--coral); transform:translateX(6px); }
+    .nav-mobile-drawer .drawer-cta {
+        margin-top:.5rem;
+        padding:1rem 3rem;
+        background:#fff; color:var(--ocean);
+        border-radius:9999px;
+        font-size:1rem; font-weight:700;
+        letter-spacing:.1em;
+    }
+    .nav-mobile-drawer .drawer-cta:hover { background:var(--coral); color:#fff; transform:none; }
+
+    @media (max-width:768px) {
+        .site-nav { padding:1.25rem 5%; }
+        .nav-links { display:none; }
+        .nav-hamburger { display:flex; }
+    }
+
+    /* =====================================================
+       HERO — Ocean / beach gradient, bright & fresh
+    ===================================================== */
+    #hero {
+        min-height: 100vh;
+        background: linear-gradient(170deg,
+            #0077A8 0%,
+            #00A8CC 30%,
+            #00C9E8 55%,
+            #7EE4F5 75%,
+            #C2F4FD 90%,
+            #FFF8EE 100%
+        );
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+        text-align: center;
+        padding: 10rem 5% 8rem;
+    }
+
+    /* Soft sun burst */
+    #hero::before {
+        content:'';
+        position:absolute;
+        top:-20%; left:50%; transform:translateX(-50%);
+        width:80vw; height:80vw;
+        background: radial-gradient(circle, rgba(255,255,255,.18) 0%, transparent 65%);
+        pointer-events:none;
+    }
+
+    /* Wave bottom edge */
+    #hero::after {
+        content:'';
+        position:absolute;
+        bottom:-2px; left:0; right:0;
+        height:80px;
+        background: var(--sand);
+        clip-path: ellipse(55% 100% at 50% 100%);
+        pointer-events:none;
+    }
+
+    .hero-eyebrow {
+        font-size: clamp(.6rem,1.2vw,.75rem);
+        font-weight:600; letter-spacing:.4em; text-transform:uppercase;
+        color: rgba(255,255,255,.7);
+        margin-bottom:1.5rem;
+        opacity:0;
+    }
+
+    .hero-headline {
+        font-size: clamp(5rem,16vw,16rem);
+        font-weight:900; line-height:.82; letter-spacing:-.06em;
+        text-transform:uppercase; color:#fff;
+        margin-bottom:1.5rem;
+        /* overflow moved to lines to prevent clipping italics */
+        text-shadow: 0 4px 40px rgba(0,60,100,.2);
+    }
+
+    .hero-headline-line {
+        display:block;
+        overflow:hidden;
+        padding: 0 0.15em 0.15em;
+        margin: 0 -0.15em;
+        opacity:0;
+        transform:translateY(110%);
+    }
+
+    .hero-headline em { font-style:italic; color:var(--coral); padding-right: 0.1em; }
+
+    .hero-tagline {
+        font-size: clamp(.85rem,1.8vw,1.15rem);
+        font-weight:300; letter-spacing:.2em; text-transform:uppercase;
+        color: rgba(255,255,255,.75);
+        margin-bottom:3.5rem;
+        opacity:0;
+    }
+
+    /* Three cans row */
+    .hero-cans {
+        display: flex;
+        align-items: flex-end;
+        justify-content: center;
+        gap: clamp(1rem,4vw,4rem);
+        margin-bottom: 3.5rem;
+        opacity:0;
+    }
+
+    .hero-can-item {
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        gap:.75rem;
+        cursor:pointer;
+        transition:transform .4s cubic-bezier(.34,1.56,.64,1);
+    }
+    .hero-can-item:hover { transform:translateY(-12px) scale(1.04); }
+
+    .hero-can-item.center-can { transform:translateY(-18px) scale(1.08); }
+    .hero-can-item.center-can:hover { transform:translateY(-28px) scale(1.12); }
+
+    .hero-can-img {
+        height: clamp(140px,22vh,240px);
+        width: auto;
+        object-fit:contain;
+        filter: drop-shadow(0 30px 40px rgba(0,60,100,.35)) drop-shadow(0 8px 14px rgba(0,0,0,.2));
+    }
+
+    .hero-can-label {
+        font-size:.65rem; font-weight:700; letter-spacing:.2em; text-transform:uppercase;
+        color:rgba(255,255,255,.75);
+        background:rgba(255,255,255,.15);
+        backdrop-filter:blur(8px);
+        padding:.3rem .9rem;
+        border-radius:9999px;
+    }
+
+    .hero-cta {
+        display:inline-block;
+        padding:1rem 3rem;
+        background:#fff;
+        color:var(--ocean);
+        font-family:'Outfit',sans-serif;
+        font-size:.8rem; font-weight:700;
+        letter-spacing:.15em; text-transform:uppercase;
+        border:none; cursor:pointer;
+        border-radius:9999px;
+        transition:background .3s, color .3s, transform .2s, box-shadow .3s;
+        box-shadow: 0 12px 40px rgba(0,100,140,.25);
+        opacity:0;
+    }
+    .hero-cta:hover { background:var(--coral); color:#fff; transform:translateY(-3px); box-shadow:0 18px 50px rgba(235,79,145,.4); }
+
+    /* scroll cue */
+    .hero-scroll-cue {
+        position:absolute; bottom:5.5rem; left:50%;
+        transform:translateX(-50%);
+        display:flex; flex-direction:column; align-items:center; gap:.6rem;
+        opacity:0;
+    }
+    .hero-scroll-cue span { font-size:.6rem; font-weight:700; letter-spacing:.3em; text-transform:uppercase; color:rgba(255,255,255,.5); }
+    .scroll-line { width:1px; height:42px; background:linear-gradient(to bottom,rgba(255,255,255,.6),transparent); animation:lineAnim 2.2s ease infinite; }
+    @keyframes lineAnim { 0%{transform:scaleY(0);transform-origin:top;} 50%{transform:scaleY(1);transform-origin:top;} 51%{transform-origin:bottom;} 100%{transform:scaleY(0);transform-origin:bottom;} }
+
+    /* =====================================================
+       MARQUEE BAND
+    ===================================================== */
+    .marquee-band {
+        background: linear-gradient(90deg, var(--coral) 0%, #f99fc1 100%);
+        overflow: hidden;
+        padding: 1.1rem 0;
+    }
+    .marquee-track {
+        display:flex; gap:0;
+        animation: marqueeRoll 28s linear infinite;
+        will-change:transform;
+    }
+    .marquee-item {
+        font-size:clamp(.9rem,2vw,1.4rem); font-weight:800;
+        text-transform:uppercase; color:rgba(255,255,255,.25);
+        padding:0 2rem; flex-shrink:0;
+    }
+    .marquee-item.accent { color:rgba(255,255,255,.9); font-size:clamp(.55rem,1vw,.8rem); padding:0 1rem; align-self:center; }
+    @keyframes marqueeRoll { 0%{transform:translateX(0);} 100%{transform:translateX(-50%);} }
+
+    /* =====================================================
+       ABOUT SECTION
+    ===================================================== */
+    #about {
+        padding: clamp(5rem,10vw,9rem) 5%;
+        background: var(--sand);
+    }
+
+    .about-inner {
+        max-width: 1400px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr 1.6fr;
+        gap: clamp(2rem,4vw,5rem);
+        align-items: center;
+    }
+
+    @media (max-width:768px) { .about-inner { grid-template-columns:1fr; } }
+
+    .about-text { text-align:left; }
+
+    .section-eyebrow {
+        font-size:.7rem; font-weight:600; letter-spacing:.35em; text-transform:uppercase;
+        color:var(--ocean); margin-bottom:1.25rem;
+        display:flex; align-items:center; gap:.75rem;
+    }
+    .section-eyebrow::before { content:''; width:2rem; height:2px; background:currentColor; flex-shrink:0; border-radius:2px; }
+
+    .about-heading {
+        font-size: clamp(2.5rem,5.5vw,5.5rem);
+        font-weight:900; line-height:.88; letter-spacing:-.05em;
+        color:var(--blue); text-transform:uppercase;
+        margin-bottom:1.75rem;
+    }
+    .about-heading em { font-style:italic; color:var(--coral); }
+
+    .about-body {
+        font-size:clamp(.9rem,1.4vw,1.05rem); font-weight:300; line-height:1.8;
+        color:var(--dark-grey); margin-bottom:1.25rem; max-width:460px;
+    }
+
+    .btn-primary {
+        display:inline-block;
+        padding:.85rem 2.5rem;
+        background:var(--ocean); color:#fff;
+        font-family:'Outfit',sans-serif;
+        font-size:.78rem; font-weight:700;
+        letter-spacing:.15em; text-transform:uppercase;
+        border:none; cursor:pointer;
+        transition:background .3s, transform .2s, box-shadow .3s;
+        border-radius:9999px;
+        margin-top:.75rem;
+        box-shadow: 0 8px 24px rgba(0,143,181,.3);
+    }
+    .btn-primary:hover { background:var(--coral); transform:translateY(-2px); box-shadow:0 12px 30px rgba(235,79,145,.4); }
+
+    /* About images — one hero splash + two small cans */
+    .about-images {
+        display:grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto auto;
+        gap: clamp(.75rem,2vw,1.25rem);
+        align-items: stretch;
+    }
+
+    .about-splash-main {
+        grid-column: 1 / -1;
+        border-radius: 1.25rem;
+        overflow: hidden;
+        aspect-ratio: 3/2;
+        position: relative;
+    }
+    .about-splash-main img {
+        width:100%; height:100%; object-fit:cover;
+        transition:transform .5s cubic-bezier(.34,1.56,.64,1);
+    }
+    .about-splash-main:hover img { transform:scale(1.04); }
+
+    .about-can-wrap {
+        background: rgba(0,143,181,.06);
+        border-radius:1rem;
+        overflow:hidden;
+        aspect-ratio:1/1;
+        display:flex; align-items:center; justify-content:center;
+        transition:transform .4s cubic-bezier(.34,1.56,.64,1), box-shadow .4s;
+    }
+    .about-can-wrap:hover { transform:translateY(-8px); box-shadow:0 20px 40px rgba(0,143,181,.15); }
+    .about-can-wrap img { width:100%; height:100%; object-fit:cover; object-position:center top; }
+
+    /* =====================================================
+       PRODUCTS SECTION
+    ===================================================== */
+    #products {
+        padding: clamp(5rem,10vw,9rem) 5%;
+        background: #fff;
+    }
+
+    .products-header {
+        max-width:1200px; margin:0 auto 4rem;
+        display:flex; align-items:flex-end; justify-content:space-between;
+        flex-wrap:wrap; gap:1.5rem;
+    }
+
+    .products-heading {
+        font-size:clamp(2.5rem,6vw,6rem); font-weight:900;
+        line-height:.85; letter-spacing:-.05em; text-transform:uppercase;
+        color:var(--blue);
+    }
+
+    .products-heading span { display:block; }
+    .products-heading em { font-style:italic; color:var(--coral); }
+
+    .products-sub {
+        font-size:clamp(.8rem,1.2vw,1rem); font-weight:300;
+        color:var(--dark-grey); max-width:300px; line-height:1.6;
+        text-align:right;
+    }
+
+    @media (max-width:640px) { .products-sub { text-align:left; max-width:100%; } }
+
+    /* product cards grid */
+    .products-grid {
+        max-width:1200px; margin:0 auto;
+        display:grid;
+        grid-template-columns:repeat(3,1fr);
+        gap:clamp(1rem,2vw,2rem);
+    }
+
+    @media (max-width:768px) { .products-grid { grid-template-columns:1fr; gap:1.5rem; } }
+    @media (min-width:769px) and (max-width:1024px) { .products-grid { grid-template-columns:repeat(3,1fr); gap:1rem; } }
+
+    .product-card {
+        background:#fff;
+        border-radius:1.25rem;
+        overflow:hidden;
+        cursor:pointer;
+        transition:transform .35s cubic-bezier(.34,1.56,.64,1), box-shadow .35s;
+        box-shadow: 0 4px 24px rgba(0,14,71,.07);
+    }
+    .product-card:hover { transform:translateY(-10px); box-shadow:0 28px 56px rgba(0,14,71,.12); }
+
+    /* Splash photo fills the top of the card */
+    .product-card__splash {
+        position:relative;
+        aspect-ratio:16/10;
+        overflow:hidden;
+    }
+    .product-card__splash img.splash-photo {
+        width:100%; height:100%;
+        object-fit:cover;
+        transition:transform .6s cubic-bezier(.34,1.56,.64,1);
+    }
+    .product-card:hover .product-card__splash img.splash-photo { transform:scale(1.07); }
+
+    /* Fallback background when no splash photo yet */
+    .product-card--strawberry .product-card__splash { background:linear-gradient(160deg,#fce4f0 0%,#FFB3C1 60%,#f99fc1 100%); }
+    .product-card--passion   .product-card__splash { background:linear-gradient(160deg,#FFF3C4 0%,#FFD166 60%,#F4A10A 100%); }
+    .product-card--lychee    .product-card__splash { background:linear-gradient(160deg,#C8F4FF 0%,#7FD8F0 60%,#1A8FBF 100%); }
+
+    /* Can badge floating over splash photo */
+    .product-card__can-badge {
+        position:absolute;
+        bottom:-20px; right:1.25rem;
+        z-index:2;
+    }
+    .product-card__can-badge img {
+        height:clamp(80px,11vw,130px);
+        width:auto;
+        filter:drop-shadow(0 8px 20px rgba(0,0,0,.25));
+        transition:transform .4s cubic-bezier(.34,1.56,.64,1);
+    }
+    .product-card:hover .product-card__can-badge img { transform:translateY(-6px) scale(1.05); }
+
+    /* Fallback: show can alone if no splash image */
+    .product-card__splash-fallback {
+        width:100%; height:100%;
+        display:flex; align-items:center; justify-content:center;
+        padding:2rem;
+    }
+    .product-card__splash-fallback img {
+        height:clamp(120px,16vw,200px);
+        width:auto; object-fit:contain;
+        filter:drop-shadow(0 12px 24px rgba(0,0,0,.2));
+        mix-blend-mode:multiply;
+        transition:transform .5s cubic-bezier(.34,1.56,.64,1);
+    }
+    .product-card:hover .product-card__splash-fallback img { transform:scale(1.06) translateY(-6px); }
+
+    /* Card body */
+    .product-card__body {
+        padding:2.25rem 1.5rem 1.5rem;
+        position:relative;
+    }
+
+    .product-card__type { font-size:.65rem; font-weight:600; letter-spacing:.25em; text-transform:uppercase; color:var(--dark-grey); margin-bottom:.5rem; }
+
+    .product-card__name {
+        font-size:clamp(1.3rem,2.5vw,1.8rem); font-weight:800;
+        line-height:.92; letter-spacing:-.03em; text-transform:uppercase;
+        color:var(--blue); margin-bottom:.75rem;
+    }
+    .product-card--strawberry .product-card__name { color:var(--strawberry); }
+    .product-card--passion   .product-card__name { color:var(--passion-purple); }
+    .product-card--lychee    .product-card__name { color:var(--lychee-blue); }
+
+    .product-card__desc { font-size:.82rem; font-weight:300; line-height:1.65; color:var(--dark-grey); margin-bottom:1.25rem; }
+
+    .product-card__link {
+        display:inline-flex; align-items:center; gap:.5rem;
+        font-size:.72rem; font-weight:700; letter-spacing:.12em;
+        text-transform:uppercase; color:var(--ocean);
+        transition:gap .3s;
+    }
+    .product-card__link::after { content:'→'; transition:transform .3s; }
+    .product-card__link:hover::after { transform:translateX(4px); }
+    .product-card--strawberry .product-card__link { color:var(--strawberry); }
+    .product-card--passion   .product-card__link { color:var(--passion-purple); }
+    .product-card--lychee    .product-card__link { color:var(--lychee-blue); }
+
+    .product-card__stats {
+        display:flex; gap:1.5rem;
+        padding:1rem 1.5rem;
+        border-top:1px solid rgba(0,14,71,.07);
+        background: rgba(0,14,71,.02);
+    }
+    .card-stat { display:flex; flex-direction:column; gap:.15rem; }
+    .card-stat-val { font-size:1.1rem; font-weight:700; color:var(--blue); }
+    .card-stat-lbl { font-size:.58rem; font-weight:600; letter-spacing:.15em; text-transform:uppercase; color:var(--dark-grey); }
+    .product-card--strawberry .card-stat-val { color:var(--strawberry); }
+    .product-card--passion   .card-stat-val { color:var(--passion-purple); }
+    .product-card--lychee    .card-stat-val { color:var(--lychee-blue); }
+
+    /* =====================================================
+       SPLASH FEATURE STRIP — Full-width fruity hero moments
+    ===================================================== */
+    #splash-strip {
+        display:grid;
+        grid-template-columns:repeat(3,1fr);
+        gap:0;
+    }
+    @media (max-width:600px) { #splash-strip { grid-template-columns:1fr; } }
+
+    .splash-panel {
+        position:relative;
+        overflow:hidden;
+        aspect-ratio:3/2;
+        cursor:pointer;
+    }
+
+    /* Gradient background per flavour (always visible) */
+    .splash-panel--strawberry { background:linear-gradient(160deg,#FFB3C1 0%,#FF6B81 60%,#C94066 100%); }
+    .splash-panel--passion    { background:linear-gradient(160deg,#FFE77A 0%,#FFB700 60%,#C98A00 100%); }
+    .splash-panel--lychee     { background:linear-gradient(160deg,#A8E8F8 0%,#30BFDF 60%,#0E8AB5 100%); }
+
+    /* Splash photo — covers gradient when loaded */
+    .splash-panel img.panel-photo {
+        position:absolute;
+        inset:0;
+        width:100%; height:100%;
+        object-fit:cover;
+        transition:transform .6s ease, opacity .4s ease;
+        filter:brightness(.88);
+        opacity:0; /* fade in on load */
+    }
+    .splash-panel img.panel-photo.loaded { opacity:1; }
+    .splash-panel:hover img.panel-photo { transform:scale(1.06); filter:brightness(1); }
+
+    /* Can image centered in panel (visible before/without splash photo) */
+    .splash-panel__can {
+        position:absolute;
+        bottom:0; left:50%; transform:translateX(-50%);
+        height:75%;
+        object-fit:contain;
+        filter:drop-shadow(0 10px 30px rgba(0,0,0,.3));
+        transition:transform .4s cubic-bezier(.34,1.56,.64,1);
+        z-index:1;
+    }
+    .splash-panel:hover .splash-panel__can { transform:translateX(-50%) translateY(-8px) scale(1.06); }
+
+    /* Hide can when splash photo is loaded */
+    .splash-panel.photo-loaded .splash-panel__can { opacity:0; pointer-events:none; }
+
+    .splash-panel__overlay {
+        position:absolute;
+        inset:0;
+        background:linear-gradient(to top, rgba(0,0,0,.6) 0%, transparent 50%);
+        display:flex; align-items:flex-end;
+        padding:1.5rem;
+        z-index:2;
+    }
+    .splash-panel__label {
+        font-size:clamp(1rem,2vw,1.5rem); font-weight:800;
+        letter-spacing:-.03em; text-transform:uppercase; color:#fff;
+        line-height:1;
+    }
+    .splash-panel__sub {
+        font-size:.65rem; font-weight:600; letter-spacing:.2em;
+        text-transform:uppercase; color:rgba(255,255,255,.65);
+        margin-top:.35rem;
+    }
+
+    /* =====================================================
+       VALUES STRIP
+    ===================================================== */
+    #values {
+        background: linear-gradient(135deg, #004E6E 0%, #006E9B 50%, #008FB5 100%);
+        padding: clamp(5rem,9vw,8rem) 5%;
+        position:relative; overflow:hidden;
+    }
+
+    /* Wave top */
+    #values::before {
+        content:'';
+        position:absolute; top:-2px; left:0; right:0;
+        height:80px;
+        background: #fff;
+        clip-path: ellipse(55% 100% at 50% 0%);
+        pointer-events:none;
+    }
+
+    /* Bubble decoration */
+    #values::after {
+        content:'';
+        position:absolute;
+        right:-10%; bottom:-20%;
+        width:500px; height:500px;
+        border-radius:50%;
+        background:rgba(255,255,255,.04);
+        pointer-events:none;
+    }
+
+    .values-inner {
+        max-width:1200px; margin:0 auto;
+        display:grid; grid-template-columns:1fr 1fr;
+        gap:5rem; align-items:center;
+        position:relative;
+    }
+
+    @media (max-width:768px) { .values-inner { grid-template-columns:1fr; gap:3rem; } }
+
+    .values-text .section-eyebrow { color:rgba(255,255,255,.5); }
+    .values-text .section-eyebrow::before { background:rgba(255,255,255,.4); }
+
+    .values-heading {
+        font-size:clamp(2.5rem,5.5vw,5rem); font-weight:900;
+        line-height:.88; letter-spacing:-.05em; text-transform:uppercase;
+        color:#fff; margin-bottom:1.5rem;
+    }
+    .values-heading em { font-style:italic; color:var(--tropical-teal); }
+
+    .values-body { font-size:clamp(.88rem,1.3vw,1.05rem); font-weight:300; line-height:1.8; color:rgba(255,255,255,.6); }
+
+    .values-grid {
+        display:grid; grid-template-columns:repeat(3,1fr);
+        gap:1.25rem;
+    }
+
+    .value-card {
+        background:rgba(255,255,255,.08);
+        border:1px solid rgba(255,255,255,.12);
+        border-radius:1rem;
+        padding:1.75rem 1.25rem;
+        text-align:center;
+        transition:background .3s, border-color .3s, transform .3s;
+    }
+    .value-card:hover { background:rgba(255,255,255,.14); border-color:rgba(255,255,255,.25); transform:translateY(-4px); }
+
+    .value-card__num { font-size:clamp(2rem,4vw,3.5rem); font-weight:700; line-height:1; color:var(--tropical-teal); margin-bottom:.5rem; }
+    .value-card__label { font-size:.62rem; font-weight:600; letter-spacing:.25em; text-transform:uppercase; color:rgba(255,255,255,.4); line-height:1.4; }
+
+    /* =====================================================
+       MEDIA / NEWS SECTION
+    ===================================================== */
+    #media-section {
+        padding: clamp(5rem,10vw,9rem) 5%;
+        background: var(--sand);
+    }
+
+    .media-header {
+        max-width:1200px; margin:0 auto 3.5rem;
+        display:flex; align-items:flex-end; justify-content:space-between;
+        flex-wrap:wrap; gap:1rem;
+    }
+
+    .media-heading {
+        font-size:clamp(2.5rem,5vw,5rem); font-weight:900;
+        line-height:.88; letter-spacing:-.05em; text-transform:uppercase; color:var(--blue);
+    }
+
+    .media-grid {
+        max-width:1200px; margin:0 auto;
+        display:grid; grid-template-columns:repeat(3,1fr);
+        gap:clamp(1rem,2vw,1.75rem);
+    }
+
+    @media (max-width:768px)  { .media-grid { grid-template-columns:1fr; } }
+    @media (min-width:769px) and (max-width:1024px) { .media-grid { grid-template-columns:1fr 1fr; } }
+
+    .media-card {
+        background:#fff;
+        border-radius:1.25rem;
+        overflow:hidden;
+        cursor:pointer;
+        transition:transform .35s, box-shadow .35s;
+        box-shadow: 0 4px 20px rgba(0,14,71,.06);
+    }
+    .media-card:hover { transform:translateY(-6px); box-shadow:0 20px 40px rgba(0,14,71,.1); }
+
+    .media-card__img-wrap {
+        aspect-ratio:16/9; overflow:hidden;
+        display:flex; align-items:center; justify-content:center;
+    }
+    .media-card__img-wrap img { width:100%; height:100%; object-fit:cover; transition:transform .5s; }
+    .media-card:hover .media-card__img-wrap img { transform:scale(1.06); }
+
+    .media-card__placeholder {
+        width:100%; height:100%;
+        display:flex; align-items:center; justify-content:center;
+        font-size:2rem; font-weight:900; letter-spacing:-.05em;
+        text-transform:uppercase; padding:1rem; text-align:center;
+    }
+
+    .media-card__body { padding:1.5rem; }
+    .media-card__cat { font-size:.62rem; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:var(--coral); margin-bottom:.5rem; }
+    .media-card__title { font-size:clamp(.95rem,1.5vw,1.15rem); font-weight:700; line-height:1.3; color:var(--blue); margin-bottom:.75rem; }
+    .media-card__date { font-size:.7rem; color:var(--dark-grey); }
+    .media-card__link { display:inline-flex; align-items:center; gap:.4rem; font-size:.7rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--ocean); margin-top:.75rem; transition:gap .3s; }
+    .media-card__link::after { content:'→'; transition:transform .3s; }
+    .media-card__link:hover::after { transform:translateX(4px); }
+
+    /* =====================================================
+       BRANDS ROW
+    ===================================================== */
+    #brands {
+        padding: clamp(3.5rem,6vw,5rem) 5%;
+        background:#fff;
+        border-top:1px solid rgba(0,14,71,.07);
+    }
+
+    .brands-inner { max-width:1200px; margin:0 auto; }
+
+    .brands-title {
+        text-align:center; font-size:.7rem; font-weight:600;
+        letter-spacing:.35em; text-transform:uppercase; color:var(--dark-grey);
+        margin-bottom:2.5rem;
+    }
+
+    .brands-row {
+        display:flex; align-items:center; justify-content:center;
+        flex-wrap:wrap; gap:clamp(1rem,3vw,3rem);
+    }
+
+    .brand-pill {
+        padding:.65rem 1.75rem;
+        border:2px solid var(--light-grey);
+        border-radius:9999px;
+        font-size:.75rem; font-weight:700; letter-spacing:.2em; text-transform:uppercase;
+        color:var(--dark-grey);
+        transition:border-color .3s, color .3s, background .3s, transform .2s;
+        cursor:pointer;
+        text-decoration:none;
+        display:inline-block;
+    }
+    .brand-pill:hover { border-color:var(--ocean); color:var(--ocean); background:rgba(0,143,181,.06); transform:translateY(-2px); }
+    .brand-pill--red   { border-color:rgba(232,53,77,.3); color:var(--strawberry); }
+    .brand-pill--red:hover { border-color:var(--strawberry); background:rgba(232,53,77,.06); }
+    .brand-pill--orange { border-color:rgba(91,14,179,.3); color:var(--passion-purple); }
+    .brand-pill--orange:hover { border-color:var(--passion-purple); background:rgba(91,14,179,.06); }
+    .brand-pill--blue  { border-color:rgba(26,143,191,.3); color:var(--lychee-blue); }
+    .brand-pill--blue:hover { border-color:var(--lychee-blue); background:rgba(26,143,191,.06); }
+
+    /* =====================================================
+       FOOTER
+    ===================================================== */
+    footer {
+        background: #031728;
+        padding: clamp(4.5rem,8vw,7rem) 5% 0;
+    }
+
+    .footer-inner { max-width:1200px; margin:0 auto; }
+
+    .footer-grid {
+        display:grid;
+        grid-template-columns:2fr 1fr 1fr 1.5fr;
+        gap:3rem 2.5rem;
+        padding-bottom:3.5rem;
+        border-bottom:1px solid rgba(255,255,255,.06);
+        margin-bottom:2rem;
+    }
+
+    @media (max-width:900px)  { .footer-grid { grid-template-columns:1fr 1fr; } }
+    @media (max-width:480px)  { .footer-grid { grid-template-columns:1fr; } }
+
+    .footer-logo { display:block; margin-bottom:1rem; }
+    .footer-logo img { height:88px; width:auto; filter:brightness(0) invert(1); }
+
+    .footer-blurb { font-size:.82rem; line-height:1.7; color:rgba(255,255,255,.3); max-width:260px; margin-bottom:1.5rem; }
+
+    .footer-social { display:flex; gap:.75rem; }
+    .social-btn {
+        width:36px; height:36px;
+        border:1px solid rgba(255,255,255,.12);
+        display:flex; align-items:center; justify-content:center;
+        border-radius:50%;
+        font-size:.65rem; font-weight:700; color:rgba(255,255,255,.35);
+        transition:border-color .3s, color .3s, background .3s;
+    }
+    .social-btn:hover { border-color:var(--tropical-teal); color:var(--tropical-teal); background:rgba(0,201,212,.08); }
+
+    .footer-col-head { font-size:.65rem; font-weight:700; letter-spacing:.25em; text-transform:uppercase; color:#fff; margin-bottom:1.25rem; }
+
+    .footer-col-list { list-style:none; display:flex; flex-direction:column; gap:.7rem; }
+    .footer-col-list a { font-size:.82rem; color:rgba(255,255,255,.3); transition:color .3s; }
+    .footer-col-list a:hover { color:var(--tropical-teal); }
+
+    .footer-newsletter input {
+        width:100%;
+        padding:.8rem 1rem;
+        background:rgba(255,255,255,.05);
+        border:1px solid rgba(255,255,255,.1);
+        border-radius:.5rem;
+        color:#fff;
+        font-family:'Outfit',sans-serif;
+        font-size:.82rem;
+        margin-bottom:.75rem;
+        outline:none;
+        transition:border-color .3s;
+    }
+    .footer-newsletter input::placeholder { color:rgba(255,255,255,.25); }
+    .footer-newsletter input:focus { border-color:rgba(0,201,212,.5); }
+
+    .footer-newsletter button {
+        width:100%;
+        padding:.8rem;
+        background:var(--tropical-teal); color:#fff;
+        font-family:'Outfit',sans-serif;
+        font-size:.75rem; font-weight:700;
+        letter-spacing:.15em; text-transform:uppercase;
+        border:none; cursor:pointer;
+        border-radius:9999px;
+        transition:background .3s, transform .2s;
+    }
+    .footer-newsletter button:hover { background:var(--coral); transform:translateY(-1px); }
+
+    .sa-warning {
+        border:1px solid rgba(255,255,255,.06);
+        background:rgba(255,255,255,.02);
+        border-radius:.75rem;
+        padding:1.25rem 1.5rem;
+        margin-bottom:1.75rem;
+    }
+    .sa-warning-title { font-size:.6rem; font-weight:800; letter-spacing:.2em; text-transform:uppercase; color:rgba(255,255,255,.25); margin-bottom:.5rem; }
+    .sa-warning-body  { font-size:.62rem; line-height:1.7; color:rgba(255,255,255,.2); }
+    .sa-warning-body strong { color:rgba(255,255,255,.4); font-weight:700; }
+
+    .footer-bottom {
+        display:flex; justify-content:space-between; align-items:center;
+        flex-wrap:wrap; gap:1rem;
+        padding:1.5rem 0 2rem;
+    }
+    .footer-copy { font-size:.72rem; color:rgba(255,255,255,.18); }
+    .footer-legal { display:flex; gap:1.5rem; }
+    .footer-legal a { font-size:.72rem; color:rgba(255,255,255,.18); transition:color .3s; }
+    .footer-legal a:hover { color:rgba(255,255,255,.5); }
+
+    /* =====================================================
+       REVEAL UTILITIES
+    ===================================================== */
+    .reveal { opacity:0; transform:translateY(32px); }
+    .reveal-scale { opacity:0; transform:scale(.96); }
+    .reveal-left  { opacity:0; transform:translateX(-40px); }
+    .reveal-right { opacity:0; transform:translateX(40px); }
+
+    /* =====================================================
+       MOBILE RESPONSIVE
+    ===================================================== */
+    @media (max-width:768px) {
+
+        /* Hero */
+        #hero { padding:8rem 5% 7rem; }
+        .hero-cans { gap:1rem; }
+        .hero-can-item.center-can { transform:translateY(-10px) scale(1.06); }
+        .hero-can-img { height:clamp(100px,24vw,160px); }
+        #hero::after { height:50px; }
+
+        /* About */
+        #about { padding:4rem 5%; }
+        .about-inner { gap:2.5rem; }
+        .about-images {
+            grid-template-columns:1fr 1fr;
+            grid-template-rows:auto auto;
+        }
+        .about-splash-main { grid-column: 1 / -1; aspect-ratio:3/2; }
+
+        /* Products */
+        #products { padding:4rem 5%; }
+        .products-header { flex-direction:column; align-items:flex-start; margin-bottom:2rem; }
+        .products-sub { text-align:left; max-width:100%; }
+        .product-card__can-badge img { height:clamp(60px,18vw,100px); }
+
+        /* Values */
+        #values { padding:5rem 5% 4rem; }
+        .values-inner { gap:2.5rem; }
+        .values-grid { grid-template-columns:repeat(2,1fr); gap:1rem; }
+        #values::before { height:50px; }
+
+        /* Media */
+        #media-section { padding:4rem 5%; }
+        .media-header { flex-direction:column; align-items:flex-start; gap:.75rem; }
+
+        /* Brands */
+        #brands { padding:3rem 5%; }
+        .brands-row { gap:1rem; }
+
+        /* Footer */
+        footer { padding:3.5rem 5% 0; }
+        .footer-grid { gap:2rem; }
+
+        /* General spacing */
+        #values, #about, #products, #media-section { scroll-margin-top:60px; }
+    }
+
+    @media (max-width:480px) {
+        /* Tighter mobile */
+        .hero-cans { gap:.5rem; }
+        .hero-can-img { height:clamp(80px,20vw,130px); }
+        .hero-cta { padding:.85rem 2rem; font-size:.75rem; }
+        .values-grid { grid-template-columns:1fr 1fr; }
+        .about-images {
+            grid-template-columns:1fr;
+        }
+        .about-splash-main { grid-column:1; }
+        .about-can-wrap:last-child { display:none; } /* show only one can on very small screens */
+    }
+    </style>
+</head>
+<body>
+
+<!-- =====================================================
+     AGE GATE
+===================================================== -->
+<div id="age-gate" role="dialog" aria-modal="true">
+    <div class="gate-logo"><img src="nawtycans/nawtylogo.png" alt="Nawty Water"></div>
+    <div class="gate-sub">South Africa's Hard Seltzer</div>
+    <div class="gate-card">
+        <p class="gate-question">Are you 18+ and ready to get Nawty?</p>
+        <div class="gate-btns">
+            <button class="btn-gate btn-gate--yes" id="btn-age-yes">Yes, Let's Go</button>
+            <button class="btn-gate btn-gate--no"  id="btn-age-no">Not Yet</button>
+        </div>
+        <p class="gate-small">By entering you confirm you are of legal drinking age in your country of residence.</p>
+    </div>
+    <p style="font-size:.62rem;color:rgba(255,255,255,.5);margin-top:.75rem;letter-spacing:.15em;">NOT FOR SALE TO PERSONS UNDER THE AGE OF 18</p>
+</div>
+
+<!-- =====================================================
+     NAVIGATION
+===================================================== -->
+<!-- Mobile nav drawer -->
+<div class="nav-mobile-drawer" id="nav-drawer">
+    <a href="#about" class="drawer-link">About</a>
+    <a href="#products" class="drawer-link">Flavours</a>
+    <a href="#media-section" class="drawer-link">News</a>
+    <a href="store-locator.html" class="drawer-link">Find a Store</a>
+    <a href="#" class="drawer-cta">Shop Now</a>
+</div>
+
+<nav class="site-nav on-hero" id="site-nav">
+    <a href="#" class="nav-logo"><img src="nawtycans/nawtylogo.png" alt="Nawty Water"></a>
+    <ul class="nav-links">
+        <li><a href="#about">About</a></li>
+        <li><a href="#products">Flavours</a></li>
+        <li><a href="#media-section">News</a></li>
+        <li><a href="store-locator.html">Find a Store</a></li>
+        <li><a href="#" class="nav-cta">Shop Now</a></li>
+    </ul>
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+    </button>
+</nav>
+
+<!-- =====================================================
+     HERO — Ocean gradient, bright & fresh
+===================================================== -->
+<section id="hero">
+    <p class="hero-eyebrow">South Africa's Boldest Hard Seltzer</p>
+
+    <h1 class="hero-headline">
+        <span class="hero-headline-line">Get</span>
+        <span class="hero-headline-line"><em>Nawty</em></span>
+    </h1>
+
+    <p class="hero-tagline">Crisp · Fruity · Refreshing · Made in South Africa</p>
+
+    <!-- Three cans in a row -->
+    <div class="hero-cans">
+        <div class="hero-can-item" onclick="location.href='#products'">
+            <img src="nawtycans/1.png" alt="Nawty Strawberry" class="hero-can-img">
+            <span class="hero-can-label">Strawberry</span>
+        </div>
+        <div class="hero-can-item center-can" onclick="location.href='#products'">
+            <img src="nawtycans/2.png" alt="Cheeky Passion Fruit" class="hero-can-img">
+            <span class="hero-can-label">Passion Fruit</span>
+        </div>
+        <div class="hero-can-item" onclick="location.href='#products'">
+            <img src="nawtycans/3.png" alt="Lip Licking Lychee" class="hero-can-img">
+            <span class="hero-can-label">Lychee</span>
+        </div>
+    </div>
+
+    <a href="#products" class="hero-cta">Meet the Flavours</a>
+
+    <div class="hero-scroll-cue" aria-hidden="true">
+        <span>Scroll</span>
+        <div class="scroll-line"></div>
+    </div>
+</section>
+
+<!-- =====================================================
+     MARQUEE BAND
+===================================================== -->
+<div class="marquee-band" aria-hidden="true">
+    <div class="marquee-track">
+        <span class="marquee-item">Nawty Strawberry</span>
+        <span class="marquee-item accent">✦</span>
+        <span class="marquee-item">Cheeky Passion Fruit</span>
+        <span class="marquee-item accent">✦</span>
+        <span class="marquee-item">Lip Licking Lychee</span>
+        <span class="marquee-item accent">✦</span>
+        <span class="marquee-item">Hard Seltzer</span>
+        <span class="marquee-item accent">✦</span>
+        <span class="marquee-item">Made in South Africa</span>
+        <span class="marquee-item accent">✦</span>
+        <span class="marquee-item">4.5% ABV · Zero Sugar</span>
+        <span class="marquee-item accent">✦</span>
+        <!-- duplicate for seamless loop -->
+        <span class="marquee-item">Nawty Strawberry</span>
+        <span class="marquee-item accent">✦</span>
+        <span class="marquee-item">Cheeky Passion Fruit</span>
+        <span class="marquee-item accent">✦</span>
+        <span class="marquee-item">Lip Licking Lychee</span>
+        <span class="marquee-item accent">✦</span>
+        <span class="marquee-item">Hard Seltzer</span>
+        <span class="marquee-item accent">✦</span>
+        <span class="marquee-item">Made in South Africa</span>
+        <span class="marquee-item accent">✦</span>
+        <span class="marquee-item">4.5% ABV · Zero Sugar</span>
+        <span class="marquee-item accent">✦</span>
+    </div>
+</div>
+
+<!-- =====================================================
+     SPLASH FEATURE STRIP — Three flavour moments
+===================================================== -->
+<div id="splash-strip">
+    <div class="splash-panel splash-panel--strawberry" id="panel-strawberry">
+        <img class="panel-photo" src="nawtycans/Hyperrealistic_product_photography_of_a_slim_alumi_delpmaspu.png" alt=""
+             onload="this.classList.add('loaded'); this.parentElement.classList.add('photo-loaded')"
+             onerror="this.remove()">
+        <img class="splash-panel__can" src="nawtycans/1.png" alt="Nawty Strawberry can">
+        <div class="splash-panel__overlay">
+            <div>
+                <div class="splash-panel__label">Nawty<br>Strawberry</div>
+                <div class="splash-panel__sub">Bold &amp; Refreshing</div>
+            </div>
+        </div>
+    </div>
+    <div class="splash-panel splash-panel--passion" id="panel-passion">
+        <img class="panel-photo" src="nawtycans/Hyperrealistic Product Photography Mar 12.png" alt=""
+             onload="this.classList.add('loaded'); this.parentElement.classList.add('photo-loaded')"
+             onerror="this.remove()">
+        <img class="splash-panel__can" src="nawtycans/2.png" alt="Cheeky Passion Fruit can">
+        <div class="splash-panel__overlay">
+            <div>
+                <div class="splash-panel__label">Cheeky<br>Passion Fruit</div>
+                <div class="splash-panel__sub">Tropical &amp; Tangy</div>
+            </div>
+        </div>
+    </div>
+    <div class="splash-panel splash-panel--lychee" id="panel-lychee">
+        <img class="panel-photo" src="nawtycans/Hyperrealistic Product Photography Mar 12 (1).png" alt=""
+             onload="this.classList.add('loaded'); this.parentElement.classList.add('photo-loaded')"
+             onerror="this.remove()">
+        <img class="splash-panel__can" src="nawtycans/3.png" alt="Lip Licking Lychee can">
+        <div class="splash-panel__overlay">
+            <div>
+                <div class="splash-panel__label">Lip Licking<br>Lychee</div>
+                <div class="splash-panel__sub">Floral &amp; Crisp</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- =====================================================
+     ABOUT  — two column
+===================================================== -->
+<section id="about">
+    <div class="about-inner">
+
+        <div class="about-text reveal-left">
+            <p class="section-eyebrow">Our Company</p>
+            <h2 class="about-heading">The<br><em>Nawty</em><br>Story</h2>
+            <p class="about-body">
+                Born from a simple belief: South Africa deserved a hard seltzer with real attitude.
+                We brew every can with natural fruit flavour, sparkling water, and zero added sugar —
+                because great taste shouldn't cost you anything extra.
+            </p>
+            <p class="about-body">
+                Low calorie. No compromise. Three bold flavours made for people who live out loud.
+            </p>
+            <a href="#products" class="btn-primary">Explore Flavours</a>
+        </div>
+
+        <div class="about-images reveal-right">
+            <!-- Main splash feature — autoplay video -->
+            <div class="about-splash-main">
+                <video autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;object-position:center 35%;border-radius:inherit;">
+                    <source src="nawtycans/mainvideo.mp4" type="video/mp4">
+                </video>
+            </div>
+            <!-- Two secondary photos -->
+            <div class="about-can-wrap">
+                <img src="nawtycans/story1.jpg" alt="Nawty Story 1">
+            </div>
+            <div class="about-can-wrap">
+                <img src="nawtycans/story2.jpeg" alt="Nawty Story 2">
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- =====================================================
+     PRODUCTS  — flavour card grid with splash photos
+===================================================== -->
+<section id="products">
+    <div class="products-header">
+        <h2 class="products-heading reveal">
+            <span>Meet</span>
+            <span>the <em>Flavours</em></span>
+        </h2>
+        <p class="products-sub reveal">Three bold hard seltzers. Crisp, refreshing, and dangerously drinkable.</p>
+    </div>
+
+    <div class="products-grid">
+
+        <!-- Card 1: Strawberry -->
+        <div class="product-card product-card--strawberry reveal" onclick="location.href='strawberry.html'" style="cursor:pointer;">
+            <div class="product-card__splash">
+                <img class="splash-photo" src="nawtycans/Hyperrealistic_product_photography_of_a_slim_alumi_delpmaspu.png" alt="Nawty Strawberry splash"
+                     onerror="this.remove(); this.parentElement.querySelector('.product-card__splash-fallback').style.display='flex'">
+                <div class="product-card__can-badge">
+                    <img src="nawtycans/1.png" alt="Nawty Strawberry can">
+                </div>
+                <div class="product-card__splash-fallback" style="display:none">
+                    <img src="nawtycans/1.png" alt="Nawty Strawberry">
+                </div>
+            </div>
+            <div class="product-card__body">
+                <div class="product-card__type">Flavour 01</div>
+                <h3 class="product-card__name">Nawty<br>Strawberry</h3>
+                <p class="product-card__desc">Bold, sun-ripened strawberry. Deep fruit intensity with crisp carbonation and zero sugar crash.</p>
+                <a href="strawberry.html" class="product-card__link">View Flavour</a>
+            </div>
+            <div class="product-card__stats">
+                <div class="card-stat"><span class="card-stat-val">4.5%</span><span class="card-stat-lbl">ABV</span></div>
+                <div class="card-stat"><span class="card-stat-val">330ml</span><span class="card-stat-lbl">Volume</span></div>
+                <div class="card-stat"><span class="card-stat-val">89</span><span class="card-stat-lbl">Calories</span></div>
+            </div>
+        </div>
+
+        <!-- Card 2: Passion Fruit -->
+        <div class="product-card product-card--passion reveal" onclick="location.href='passion-fruit.html'" style="cursor:pointer;">
+            <div class="product-card__splash">
+                <img class="splash-photo" src="nawtycans/Hyperrealistic Product Photography Mar 12.png" alt="Cheeky Passion Fruit splash"
+                     onerror="this.remove(); this.parentElement.querySelector('.product-card__splash-fallback').style.display='flex'">
+                <div class="product-card__can-badge">
+                    <img src="nawtycans/2.png" alt="Cheeky Passion Fruit can">
+                </div>
+                <div class="product-card__splash-fallback" style="display:none">
+                    <img src="nawtycans/2.png" alt="Cheeky Passion Fruit">
+                </div>
+            </div>
+            <div class="product-card__body">
+                <div class="product-card__type">Flavour 02</div>
+                <h3 class="product-card__name">Cheeky<br>Passion Fruit</h3>
+                <p class="product-card__desc">Tangy granadilla meets tropical fizz. Light, impossibly drinkable, dangerously cheeky.</p>
+                <a href="passion-fruit.html" class="product-card__link">View Flavour</a>
+            </div>
+            <div class="product-card__stats">
+                <div class="card-stat"><span class="card-stat-val">4.5%</span><span class="card-stat-lbl">ABV</span></div>
+                <div class="card-stat"><span class="card-stat-val">330ml</span><span class="card-stat-lbl">Volume</span></div>
+                <div class="card-stat"><span class="card-stat-val">87</span><span class="card-stat-lbl">Calories</span></div>
+            </div>
+        </div>
+
+        <!-- Card 3: Lychee -->
+        <div class="product-card product-card--lychee reveal" onclick="location.href='lychee.html'" style="cursor:pointer;">
+            <div class="product-card__splash">
+                <img class="splash-photo" src="nawtycans/Hyperrealistic Product Photography Mar 12 (1).png" alt="Lip Licking Lychee splash"
+                     onerror="this.remove(); this.parentElement.querySelector('.product-card__splash-fallback').style.display='flex'">
+                <div class="product-card__can-badge">
+                    <img src="nawtycans/3.png" alt="Lip Licking Lychee can">
+                </div>
+                <div class="product-card__splash-fallback" style="display:none">
+                    <img src="nawtycans/3.png" alt="Lip Licking Lychee">
+                </div>
+            </div>
+            <div class="product-card__body">
+                <div class="product-card__type">Flavour 03</div>
+                <h3 class="product-card__name">Lip Licking<br>Lychee</h3>
+                <p class="product-card__desc">Delicate floral sweetness meets sparkling crispness. The one that stops the room.</p>
+                <a href="lychee.html" class="product-card__link">View Flavour</a>
+            </div>
+            <div class="product-card__stats">
+                <div class="card-stat"><span class="card-stat-val">4.5%</span><span class="card-stat-lbl">ABV</span></div>
+                <div class="card-stat"><span class="card-stat-val">330ml</span><span class="card-stat-lbl">Volume</span></div>
+                <div class="card-stat"><span class="card-stat-val">85</span><span class="card-stat-lbl">Calories</span></div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- =====================================================
+     VALUES — ocean blue stats strip
+===================================================== -->
+<section id="values">
+    <div class="values-inner">
+        <div class="values-text">
+            <p class="section-eyebrow reveal">Born in South Africa</p>
+            <h2 class="values-heading reveal">Zero<br><em>Excuses</em></h2>
+            <p class="values-body reveal">We don't cut corners. Every can is brewed with real fruit flavour, naturally sparkling water, and nothing you don't need. That's the Nawty way.</p>
+        </div>
+        <div class="values-grid">
+            <div class="value-card reveal">
+                <div class="value-card__num">4.5%</div>
+                <div class="value-card__label">Alcohol<br>by Volume</div>
+            </div>
+            <div class="value-card reveal">
+                <div class="value-card__num">0g</div>
+                <div class="value-card__label">Sugar<br>Added</div>
+            </div>
+            <div class="value-card reveal">
+                <div class="value-card__num">~87</div>
+                <div class="value-card__label">Calories<br>per Can</div>
+            </div>
+            <div class="value-card reveal">
+                <div class="value-card__num">330</div>
+                <div class="value-card__label">ml per<br>Can</div>
+            </div>
+            <div class="value-card reveal">
+                <div class="value-card__num">3</div>
+                <div class="value-card__label">Bold<br>Flavours</div>
+            </div>
+            <div class="value-card reveal">
+                <div class="value-card__num">SA</div>
+                <div class="value-card__label">Proudly South<br>African Made</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- =====================================================
+     MEDIA / NEWS
+===================================================== -->
+<section id="media-section">
+    <div class="media-header">
+        <h2 class="media-heading reveal">Media<br>&amp; News</h2>
+        <a href="#" class="btn-primary reveal" style="margin-bottom:.5rem">View All</a>
+    </div>
+
+    <div class="media-grid">
+
+        <div class="media-card reveal">
+            <div class="media-card__img-wrap">
+                <div class="media-card__placeholder" style="background:linear-gradient(135deg,#fce4f0,#f99fc1); color:#fff;">NAWTY<br>SUMMER</div>
+            </div>
+            <div class="media-card__body">
+                <div class="media-card__cat">Brand News</div>
+                <h3 class="media-card__title">Nawty Water Launches Across South Africa</h3>
+                <p class="media-card__date">March 2025</p>
+                <a href="#" class="media-card__link">Read More</a>
+            </div>
+        </div>
+
+        <div class="media-card reveal">
+            <div class="media-card__img-wrap">
+                <div class="media-card__placeholder" style="background:linear-gradient(135deg,#FFF3C4,#FFB700); color:rgba(0,0,0,.4);">TASTE<br>THE BOLD</div>
+            </div>
+            <div class="media-card__body">
+                <div class="media-card__cat">Events</div>
+                <h3 class="media-card__title">Nawty Water at Oppikoppi 2025 Festival</h3>
+                <p class="media-card__date">February 2025</p>
+                <a href="#" class="media-card__link">Read More</a>
+            </div>
+        </div>
+
+        <div class="media-card reveal">
+            <div class="media-card__img-wrap">
+                <div class="media-card__placeholder" style="background:linear-gradient(135deg,#C8F4FF,#00BFDF); color:#fff;">GET<br>NAWTY</div>
+            </div>
+            <div class="media-card__body">
+                <div class="media-card__cat">Sustainability</div>
+                <h3 class="media-card__title">Our Commitment to Responsible Brewing</h3>
+                <p class="media-card__date">January 2025</p>
+                <a href="#" class="media-card__link">Read More</a>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- =====================================================
+     BRANDS ROW
+===================================================== -->
+<section id="brands">
+    <div class="brands-inner">
+        <p class="brands-title">Where to Find Nawty Water</p>
+        <div class="brands-row">
+            <div class="brand-pill brand-pill--red">Nawty Strawberry</div>
+            <div class="brand-pill brand-pill--orange">Cheeky Passion Fruit</div>
+            <div class="brand-pill brand-pill--blue">Lip Licking Lychee</div>
+            <a href="store-locator.html?chain=Pick+n+Pay" class="brand-pill">Pick n Pay</a>
+            <a href="store-locator.html?chain=Checkers" class="brand-pill">Checkers</a>
+            <a href="store-locator.html?chain=Woolworths" class="brand-pill">Woolworths</a>
+            <a href="store-locator.html?chain=SPAR" class="brand-pill">Spar</a>
+        </div>
+    </div>
+</section>
+
+<!-- =====================================================
+     FOOTER
+===================================================== -->
+<footer>
+    <div class="footer-inner">
+        <div class="footer-grid">
+
+            <div class="footer-logo-col">
+                <span class="footer-logo"><img src="nawtycans/nawtylogo.png" alt="Nawty Water"></span>
+                <p class="footer-blurb">South Africa's boldest hard seltzer. Three flavours. Zero compromise. Drink responsibly.</p>
+                <div class="footer-social">
+                    <a href="#" class="social-btn" aria-label="Instagram">IG</a>
+                    <a href="#" class="social-btn" aria-label="Facebook">FB</a>
+                    <a href="#" class="social-btn" aria-label="Twitter">TW</a>
+                    <a href="#" class="social-btn" aria-label="TikTok">TK</a>
+                </div>
+            </div>
+
+            <div>
+                <h4 class="footer-col-head">Navigation</h4>
+                <ul class="footer-col-list">
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#about">The Story</a></li>
+                    <li><a href="#products">Flavours</a></li>
+                    <li><a href="#media-section">News</a></li>
+                    <li><a href="store-locator.html">Find a Store</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="footer-col-head">Legal</h4>
+                <ul class="footer-col-list">
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Use</a></li>
+                    <li><a href="#">Responsible Drinking</a></li>
+                    <li><a href="#">Liquor License</a></li>
+                    <li><a href="#">FAQ</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="footer-col-head">Newsletter</h4>
+                <p style="font-size:.78rem;color:rgba(255,255,255,.3);line-height:1.6;margin-bottom:1rem;">Crafted content. Once a month, never more.</p>
+                <div class="footer-newsletter">
+                    <input type="email" placeholder="Your email address" aria-label="Email address">
+                    <button type="submit">Subscribe</button>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="sa-warning" role="note">
+            <div class="sa-warning-title">⚠ Liquor Products Act — Republic of South Africa</div>
+            <div class="sa-warning-body">
+                <strong>NOT FOR SALE TO PERSONS UNDER THE AGE OF 18.</strong>
+                It is illegal to sell or supply liquor to a minor. · Don't drink and drive. ·
+                Not for pregnant women. · Enjoy Nawty Water responsibly. ·
+                Nawty Water is a registered trademark. Product of South Africa. ·
+                Contains: Water, Fermented Alcohol Base, Natural Fruit Flavouring, Carbon Dioxide. ·
+                Nawty Water (Pty) Ltd, Republic of South Africa. · info@nawtywater.co.za
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p class="footer-copy">© 2025 Nawty Water (Pty) Ltd. All Rights Reserved.</p>
+            <div class="footer-legal">
+                <a href="#">Privacy</a>
+                <a href="#">Terms</a>
+                <a href="#">Cookies</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- =====================================================
+     JAVASCRIPT
+===================================================== -->
+<script>
+'use strict';
+
+/* -------------------------------------------------
+   AGE GATE — wired first, no CDN dependency
+------------------------------------------------- */
+let lenis = null;
+const ageGateEl = document.getElementById('age-gate');
+
+function dismissAgeGate() {
+    localStorage.setItem('nawty_age_verified', '1');
+    ageGateEl.classList.add('exit');
+    setTimeout(() => {
+        ageGateEl.style.display = 'none';
+        if (lenis) lenis.start();
+        runEntrance();
+    }, 900);
+}
+
+if (localStorage.getItem('nawty_age_verified')) {
+    ageGateEl.style.display = 'none';
+    if (lenis) lenis.start();
+    setTimeout(() => runEntrance(), 0);
+}
+
+document.getElementById('btn-age-yes').addEventListener('click', dismissAgeGate);
+document.getElementById('btn-age-no').addEventListener('click', () => {
+    document.body.innerHTML = `<div style="height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;font-family:Outfit,sans-serif;color:#000e47;background:linear-gradient(160deg,#0077A8,#C2F4FD);gap:1rem;"><p style="font-size:1.5rem;font-weight:700;color:#fff;">Come back when you're ready.</p><p style="font-size:.9rem;color:rgba(255,255,255,.7);">Nawty Water is for adults only.</p></div>`;
+});
+
+/* -------------------------------------------------
+   LENIS + GSAP
+------------------------------------------------- */
+try {
+    gsap.registerPlugin(ScrollTrigger);
+
+    lenis = new Lenis({
+        duration: 1.3,
+        easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        smooth: true, smoothTouch: false, touchMultiplier: 2
+    });
+
+    lenis.on('scroll', ScrollTrigger.update);
+    gsap.ticker.add(time => lenis.raf(time * 1000));
+    gsap.ticker.lagSmoothing(0);
+    lenis.stop();
+} catch(e) {
+    console.warn('Lenis/GSAP init failed – native scroll active.', e);
+}
+
+/* -------------------------------------------------
+   HAMBURGER / MOBILE DRAWER
+------------------------------------------------- */
+const hamburgerBtn = document.getElementById('nav-hamburger');
+const mobileDrawer = document.getElementById('nav-drawer');
+
+hamburgerBtn.addEventListener('click', () => {
+    const isOpen = hamburgerBtn.classList.toggle('open');
+    mobileDrawer.classList.toggle('open', isOpen);
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+});
+
+// Close drawer when a link inside it is clicked
+mobileDrawer.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+        hamburgerBtn.classList.remove('open');
+        mobileDrawer.classList.remove('open');
+        document.body.style.overflow = '';
+    });
+});
+
+/* -------------------------------------------------
+   NAV  — ocean mode while over hero, solid on scroll
+------------------------------------------------- */
+const navEl = document.getElementById('site-nav');
+const heroEl = document.getElementById('hero');
+
+function updateNav() {
+    const heroBottom = heroEl.getBoundingClientRect().bottom;
+    const pastHero = heroBottom <= 60;
+
+    navEl.classList.toggle('solid', pastHero || window.scrollY > 40);
+    navEl.classList.toggle('on-hero', !pastHero);
+}
+
+window.addEventListener('scroll', updateNav, { passive: true });
+updateNav();
+
+/* -------------------------------------------------
+   HERO ENTRANCE
+------------------------------------------------- */
+function runEntrance() {
+    try {
+        const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+        tl.to('.hero-eyebrow',       { opacity:1, duration:.8, delay:.2 })
+          .to('.hero-headline-line', { opacity:1, y:0, duration:.85, stagger:.14 }, '-=.5')
+          .to('.hero-tagline',       { opacity:1, duration:.7 }, '-=.35')
+          .to('.hero-cans',          { opacity:1, y:0, duration:.8, ease:'power2.out' }, '-=.4')
+          .to('.hero-cta',           { opacity:1, duration:.6 }, '-=.3')
+          .to('.hero-scroll-cue',    { opacity:1, duration:.5 }, '-=.2');
+    } catch(e) {
+        document.querySelectorAll('.hero-eyebrow,.hero-headline-line,.hero-tagline,.hero-cans,.hero-cta,.hero-scroll-cue')
+            .forEach(el => { el.style.opacity = '1'; el.style.transform = 'none'; });
+    }
+}
+
+/* -------------------------------------------------
+   SCROLL REVEAL
+------------------------------------------------- */
+try {
+    const revealEls = document.querySelectorAll('.reveal, .reveal-scale, .reveal-left, .reveal-right');
+
+    revealEls.forEach(el => {
+        const isLeft  = el.classList.contains('reveal-left');
+        const isRight = el.classList.contains('reveal-right');
+        const isScale = el.classList.contains('reveal-scale');
+
+        const fromVars = isLeft  ? { opacity:0, x:-40 }
+                       : isRight ? { opacity:0, x:40  }
+                       : isScale ? { opacity:0, scale:.95 }
+                       :           { opacity:0, y:32  };
+
+        gsap.fromTo(el, fromVars, {
+            opacity:1, x:0, y:0, scale:1,
+            duration:.85,
+            ease:'power2.out',
+            scrollTrigger: {
+                trigger: el,
+                start: 'top 88%',
+                toggleActions: 'play none none none'
+            }
+        });
+    });
+} catch(e) {
+    document.querySelectorAll('.reveal,.reveal-scale,.reveal-left,.reveal-right')
+        .forEach(el => { el.style.opacity = '1'; el.style.transform = 'none'; });
+}
+</script>
+</body>
+</html>
