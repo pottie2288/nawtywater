@@ -60,6 +60,15 @@
       0%, 100% { transform: translateX(-50%) translateY(0); opacity: 1; }
       50%       { transform: translateX(-50%) translateY(8px); opacity: .5; }
     }
+    .page-transition-overlay {
+      position: fixed; inset: 0; z-index: 9999;
+      background: #000;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.5s ease;
+    }
+    .page-transition-overlay.active {
+      opacity: 1; pointer-events: all;
+    }
     .particle {
       position: absolute;
       animation: float 6s ease-in-out infinite;
@@ -232,6 +241,7 @@
   </style>
 </head>
 <body>
+  <div class="page-transition-overlay" id="page-transition-overlay"></div>
 
   <!-- =============================================
        MOBILE DRAWER
@@ -661,6 +671,16 @@
     gsap.from('.flavour-teaser', {
       scrollTrigger: { trigger: '.flavour-teaser', start: 'top 85%', toggleActions: 'play none none reverse' },
       y: 40, opacity: 0, stagger: 0.2, duration: 0.7, ease: 'power3.out'
+    });
+
+    // Page transition on logo / back-link clicks
+    const overlay = document.getElementById('page-transition-overlay');
+    document.querySelectorAll('a[href="index.html"]').forEach(link => {
+      link.addEventListener('click', e => {
+        e.preventDefault();
+        overlay.classList.add('active');
+        setTimeout(() => { window.location.href = 'index.html'; }, 500);
+      });
     });
   </script>
 
