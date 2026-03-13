@@ -297,6 +297,27 @@
     @media (max-width: 768px) {
       .nutrition-label { max-width: 100%; margin-top: 2rem; }
     }
+
+    /* Mood Can Styles */
+    .mood-can {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      height: 75vh;
+      max-height: 650px;
+      width: auto;
+      z-index: 3;
+      pointer-events: none;
+      will-change: transform, opacity;
+    }
+    .mood-quote {
+      position: relative;
+      z-index: 1;
+    }
+    @media (max-width: 768px) {
+      .mood-can { height: 50vh; }
+    }
   </style>
 </head>
 <body>
@@ -432,8 +453,9 @@
     </div>
 
     <!-- Mood quote -->
-    <div class="mood-content" style="text-align:center; position:relative; z-index:2; padding:0 5%;">
+    <div class="mood-content" style="text-align:center; position:relative; z-index:2; padding:0 5%; width:100%; height:100%; display:flex; align-items:center; justify-content:center;">
       <p class="mood-quote" style="font-size:clamp(2.5rem,7vw,8rem); font-weight:900; line-height:1.05; color:#a8e6f0; letter-spacing:-.04em; max-width:900px; margin:0 auto; will-change:transform;">"Delicate. Exotic.<br>Dangerously smooth."</p>
+      <img src="nawtycans/lycheeice.png" alt="" class="mood-can" aria-hidden="true">
     </div>
   </section>
 
@@ -677,7 +699,8 @@
     const s4Tl = gsap.timeline();
     s4Tl
       .from('.mood-quote',    { scale: 0.85, opacity: 0, ease: 'none' }, 0)
-      .from('.mood-particle', { y: 60, opacity: 0, stagger: 0.1, ease: 'none' }, 0);
+      .from('.mood-particle', { y: 60, opacity: 0, stagger: 0.1, ease: 'none' }, 0)
+      .from('.mood-can',      { y: 100, scale: 0.9, opacity: 0, ease: 'power2.out' }, 0.2);
 
     ScrollTrigger.create({
       trigger: '#s4-mood',
