@@ -183,9 +183,6 @@
       #s2-parallax .s2-can { height: 40vh !important; }
       #s2-parallax .nutrition-label { order: 3; }
       .s2-deco-can { display: none !important; }
-      #s3-ingredients { padding-top: 120px; padding-bottom: 4rem; }
-      #s3-ingredients .ing-grid { grid-template-columns: 1fr !important; }
-      .s3-deco-can { display: none !important; }
       #s4-mood { padding-top: 120px; padding-bottom: 4rem; }
     }
 
@@ -415,42 +412,9 @@
     </div>
   </section>
 
-  <!-- =============================================
-       SECTION 3: INGREDIENTS (pinned)
-       ============================================= -->
-  <section id="s3-ingredients" class="flavour-section" style="height:100vh; display:flex; align-items:center; background:var(--sand); overflow:hidden; position:relative;">
-
-    <div style="max-width:1200px; margin:0 auto; padding:0 5%; width:100%; position:relative; z-index:1;">
-      <p style="font-size:.75rem; font-weight:700; letter-spacing:.3em; text-transform:uppercase; color:#c9920a; margin-bottom:3rem;">— Flavour Notes</p>
-      <div class="ing-grid" style="display:grid; grid-template-columns:repeat(3,1fr); gap:2rem;">
-
-        <!-- Card 1: Real Passion Fruit -->
-        <div class="ing-card" style="background:#fff; border-radius:1.5rem; padding:2.5rem 2rem; box-shadow:0 4px 32px rgba(0,0,0,.06); will-change:transform;">
-          <div style="margin-bottom:1rem;"><img src="nawtycans/passion1.png" alt="Passion fruit" style="width:48px;height:48px;object-fit:contain;"></div>
-          <div style="font-size:2.5rem; font-weight:900; color:#c9920a; line-height:1;">100%</div>
-          <div style="font-size:1.1rem; font-weight:700; color:var(--blue); margin:.5rem 0 .75rem;">Real Passion Fruit</div>
-          <div style="font-size:.85rem; font-weight:300; color:#686868; line-height:1.6;">Tropical natural flavouring, nothing fake</div>
-        </div>
-
-        <!-- Card 2: Light & Bubbly -->
-        <div class="ing-card" style="background:#fff; border-radius:1.5rem; padding:2.5rem 2rem; box-shadow:0 4px 32px rgba(0,0,0,.06); will-change:transform;">
-          <div style="font-size:3rem; margin-bottom:1rem;">💧</div>
-          <div style="font-size:2.5rem; font-weight:900; color:#c9920a; line-height:1;">Sparkling</div>
-          <div style="font-size:1.1rem; font-weight:700; color:var(--blue); margin:.5rem 0 .75rem;">Light &amp; Bubbly</div>
-          <div style="font-size:.85rem; font-weight:300; color:#686868; line-height:1.6;">Crisp carbonation in every sip</div>
-        </div>
-
-        <!-- Card 3: Zero Sugar -->
-        <div class="ing-card" style="background:#fff; border-radius:1.5rem; padding:2.5rem 2rem; box-shadow:0 4px 32px rgba(0,0,0,.06); will-change:transform;">
-          <div style="font-size:3rem; margin-bottom:1rem;">✨</div>
-          <div style="font-size:2.5rem; font-weight:900; color:#c9920a; line-height:1;">0g</div>
-          <div style="font-size:1.1rem; font-weight:700; color:var(--blue); margin:.5rem 0 .75rem;">Zero Sugar</div>
-          <div style="font-size:.85rem; font-weight:300; color:#686868; line-height:1.6;">Bold tropical taste, zero compromise</div>
-        </div>
-
-      </div>
-    </div>
   </section>
+
+  <!-- =============================================
 
   <!-- =============================================
        SECTION 4: MOOD (pinned)
@@ -706,22 +670,6 @@
     });
 
     // -----------------------------------------------
-    // SECTION 3: INGREDIENTS
-    // -----------------------------------------------
-    const s3Tl = gsap.timeline();
-    s3Tl
-      .from('.ing-card',    { y: 100, opacity: 0, stagger: 0.3, ease: 'none' }, 0);
-
-    ScrollTrigger.create({
-      trigger: '#s3-ingredients',
-      start: 'top top',
-      end: isMobile ? '+=0' : '+=200vh',
-      pin: !isMobile,
-      scrub: isMobile ? false : 1.2,
-      animation: isMobile ? undefined : s3Tl,
-      toggleActions: isMobile ? 'play none none reverse' : undefined,
-      onEnter: isMobile ? () => s3Tl.play() : undefined
-    });
 
     // -----------------------------------------------
     // SECTION 4: MOOD
