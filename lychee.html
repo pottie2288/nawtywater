@@ -181,6 +181,7 @@
       #s2-parallax { padding-top: 120px; padding-bottom: 4rem; }
       #s2-parallax .s2-grid { grid-template-columns: 1fr !important; gap: 2rem !important; }
       #s2-parallax .s2-can { height: 40vh !important; }
+      #s2-parallax .nutrition-label { order: 3; }
       #s3-ingredients { padding-top: 120px; padding-bottom: 4rem; }
       #s3-ingredients .ing-grid { grid-template-columns: 1fr !important; }
       .s3-deco-can { display: none !important; }
@@ -238,6 +239,66 @@
     .footer-legal { display: flex; gap: 1.5rem; }
     .footer-legal a { font-size: .72rem; color: rgba(255,255,255,.18); transition: color .3s; }
     .footer-legal a:hover { color: rgba(255,255,255,.5); }
+
+    /* Nutrition Label Styles */
+    .nutrition-label {
+      background: rgba(255, 255, 255, 0.4);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      border-radius: 1.5rem;
+      padding: 2rem;
+      max-width: 380px;
+      color: var(--blue);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.05);
+      will-change: transform, opacity;
+    }
+    .nutrition-header {
+      border-bottom: 2px solid var(--blue);
+      padding-bottom: 0.75rem;
+      margin-bottom: 1rem;
+    }
+    .nutrition-title {
+      font-size: 1.5rem;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: -0.02em;
+    }
+    .nutrition-subtitle {
+      font-size: 0.75rem;
+      font-weight: 600;
+      opacity: 0.7;
+    }
+    .nutrition-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.4rem 0;
+      border-bottom: 1px solid rgba(0, 14, 71, 0.1);
+      font-size: 0.9rem;
+    }
+    .nutrition-row span:first-child {
+      font-weight: 700;
+    }
+    .ingredients-box {
+      margin-top: 1.5rem;
+    }
+    .ingredients-title {
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 0.5rem;
+      color: var(--accent);
+    }
+    .ingredients-list {
+      font-size: 0.75rem;
+      line-height: 1.5;
+      font-weight: 400;
+      opacity: 0.8;
+    }
+    @media (max-width: 768px) {
+      .nutrition-label { max-width: 100%; margin-top: 2rem; }
+    }
   </style>
 </head>
 <body>
@@ -320,11 +381,33 @@
       <div style="display:flex; justify-content:center;">
         <img src="nawtycans/3.png" alt="" class="s2-can" aria-hidden="true" style="height:60vh; max-height:520px; width:auto; will-change:transform; display:block;">
       </div>
-      <div class="s2-text">
-        <div class="s2-word-1" style="font-size:clamp(2.5rem,6vw,5.5rem); font-weight:900; color:#1a8fbf; letter-spacing:-.03em; line-height:1; will-change:transform;">Delicate.</div>
-        <div class="s2-word-2" style="font-size:clamp(2.5rem,6vw,5.5rem); font-weight:900; color:#1a8fbf; letter-spacing:-.03em; line-height:1; will-change:transform;">Exotic.</div>
-        <div class="s2-word-3" style="font-size:clamp(2.5rem,6vw,5.5rem); font-weight:900; color:#1a8fbf; letter-spacing:-.03em; line-height:1; will-change:transform;">Smooth.</div>
-      </div>
+        <div class="s2-text">
+          <div class="s2-word-1" style="font-size:clamp(2.5rem,6vw,5.5rem); font-weight:900; color:#1a8fbf; letter-spacing:-.03em; line-height:1; will-change:transform;">Delicate.</div>
+          <div class="s2-word-2" style="font-size:clamp(2.5rem,6vw,5.5rem); font-weight:900; color:#1a8fbf; letter-spacing:-.03em; line-height:1; will-change:transform;">Exotic.</div>
+          <div class="s2-word-3" style="font-size:clamp(2.5rem,6vw,5.5rem); font-weight:900; color:#1a8fbf; letter-spacing:-.03em; line-height:1; margin-bottom:2rem; will-change:transform;">Smooth.</div>
+
+          <!-- Nutrition Label -->
+          <div class="nutrition-label">
+            <div class="nutrition-header">
+              <div class="nutrition-title">Nutrition</div>
+              <div class="nutrition-subtitle">Approximate per 355ml can</div>
+            </div>
+            <div class="nutrition-row"><span>Calories</span><span>~72–100 cal</span></div>
+            <div class="nutrition-row"><span>Alcohol (ABV)</span><span>4% – 5%</span></div>
+            <div class="nutrition-row"><span>Sugar</span><span>0g</span></div>
+            <div class="nutrition-row"><span>Carbs</span><span>Low / 0g</span></div>
+            <div class="nutrition-row"><span>Fat</span><span>0g</span></div>
+            <div class="nutrition-row"><span>Protein</span><span>0g</span></div>
+            <div class="nutrition-row"><span>Vitamin C</span><span>Added</span></div>
+
+            <div class="ingredients-box">
+              <div class="ingredients-title">Ingredients</div>
+              <div class="ingredients-list">
+                Deionised Water, Vodka, Natural Flavouring, Citric Acid, Preservative (Potassium Sorbate), Ascorbic Acid (Vitamin C), Natural Stevia Extract.
+              </div>
+            </div>
+          </div>
+        </div>
     </div>
   </section>
 
@@ -606,7 +689,8 @@
       .to('#s2-parallax', { backgroundColor: '#f5feff', ease: 'none' }, 0)
       .from('.s2-word-1', { x: 120, opacity: 0, ease: 'none' }, 0.1)
       .from('.s2-word-2', { x: 120, opacity: 0, ease: 'none' }, 0.35)
-      .from('.s2-word-3', { x: 120, opacity: 0, ease: 'none' }, 0.6);
+      .from('.s2-word-3', { x: 120, opacity: 0, ease: 'none' }, 0.6)
+      .from('.nutrition-label', { y: 40, opacity: 0, ease: 'power2.out' }, 0.8);
 
     ScrollTrigger.create({
       trigger: '#s2-parallax',
