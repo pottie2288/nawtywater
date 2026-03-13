@@ -182,6 +182,7 @@
       #s2-parallax .s2-grid { grid-template-columns: 1fr !important; gap: 2rem !important; }
       #s2-parallax .s2-can { height: 40vh !important; }
       #s2-parallax .nutrition-label { order: 3; }
+      .s2-deco-can { display: none !important; }
       #s3-ingredients { padding-top: 120px; padding-bottom: 4rem; }
       #s3-ingredients .ing-grid { grid-template-columns: 1fr !important; }
       .s3-deco-can { display: none !important; }
@@ -376,6 +377,9 @@
     <!-- Rotating background blob -->
     <div class="s2-bg-shape" style="position:absolute; width:60vmin; height:60vmin; border-radius:50%; background:rgba(232,53,77,.12); top:50%; left:30%; transform:translate(-50%,-50%); will-change:transform;"></div>
 
+    <!-- Decorative background can -->
+    <img src="nawtycans/1.png" alt="" class="s2-deco-can" aria-hidden="true" style="position:absolute; right:-5%; top:50%; transform:translateY(-50%); height:80vh; width:auto; opacity:.12; will-change:transform; pointer-events:none;">
+
     <!-- Two-column grid -->
     <div class="s2-grid" style="display:grid; grid-template-columns:1fr 1fr; gap:4rem; align-items:center; max-width:1200px; padding:0 5%; width:100%;">
       <div style="display:flex; justify-content:center;">
@@ -415,9 +419,6 @@
        SECTION 3: INGREDIENTS (pinned)
        ============================================= -->
   <section id="s3-ingredients" class="flavour-section" style="height:100vh; display:flex; align-items:center; background:var(--sand); overflow:hidden; position:relative;">
-
-    <!-- Decorative background can -->
-    <img src="nawtycans/1.png" alt="" class="s3-deco-can" aria-hidden="true" style="position:absolute; right:-5%; top:50%; transform:translateY(-50%); height:80vh; width:auto; opacity:.12; will-change:transform; pointer-events:none;">
 
     <div style="max-width:1200px; margin:0 auto; padding:0 5%; width:100%; position:relative; z-index:1;">
       <p style="font-size:.75rem; font-weight:700; letter-spacing:.3em; text-transform:uppercase; color:#e8354d; margin-bottom:3rem;">— Flavour Notes</p>
@@ -690,7 +691,8 @@
       .from('.s2-word-1', { x: 120, opacity: 0, ease: 'none' }, 0.1)
       .from('.s2-word-2', { x: 120, opacity: 0, ease: 'none' }, 0.35)
       .from('.s2-word-3', { x: 120, opacity: 0, ease: 'none' }, 0.6)
-      .from('.nutrition-label', { y: 40, opacity: 0, ease: 'power2.out' }, 0.8);
+      .from('.nutrition-label', { y: 40, opacity: 0, ease: 'power2.out' }, 0.8)
+      .from('.s2-deco-can', { opacity: 0, x: 100, ease: 'none' }, 0.1);
 
     ScrollTrigger.create({
       trigger: '#s2-parallax',
@@ -708,8 +710,7 @@
     // -----------------------------------------------
     const s3Tl = gsap.timeline();
     s3Tl
-      .from('.ing-card',    { y: 100, opacity: 0, stagger: 0.3, ease: 'none' }, 0)
-      .from('.s3-deco-can', { opacity: 0, scale: 0.8, ease: 'none' }, 0);
+      .from('.ing-card',    { y: 100, opacity: 0, stagger: 0.3, ease: 'none' }, 0);
 
     ScrollTrigger.create({
       trigger: '#s3-ingredients',
