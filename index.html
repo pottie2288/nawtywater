@@ -1025,62 +1025,115 @@
     /* =====================================================
        MEDIA / NEWS SECTION
     ===================================================== */
-    #media-section {
+    /* ── Testimonials ── */
+    #testimonials-section {
         padding: clamp(5rem,10vw,9rem) 5%;
         background: var(--sand);
+        overflow: hidden;
     }
 
-    .media-header {
-        max-width:1200px; margin:0 auto 3.5rem;
-        display:flex; align-items:flex-end; justify-content:space-between;
-        flex-wrap:wrap; gap:1rem;
+    .testimonials-header {
+        max-width: 540px;
+        margin: 0 auto 3rem;
+        text-align: center;
     }
 
-    .media-heading {
-        font-size:clamp(2.5rem,5vw,5rem); font-weight:900;
-        line-height:.88; letter-spacing:-.05em; text-transform:uppercase; color:var(--blue);
+    .testimonials-badge {
+        display: inline-block;
+        border: 1.5px solid var(--light-grey);
+        padding: .25rem 1rem;
+        border-radius: .5rem;
+        font-size: .75rem;
+        font-weight: 600;
+        letter-spacing: .1em;
+        text-transform: uppercase;
+        color: var(--dark-grey);
+        margin-bottom: 1.25rem;
     }
 
-    .media-grid {
-        max-width:1200px; margin:0 auto;
-        display:grid; grid-template-columns:repeat(3,1fr);
-        gap:clamp(1rem,2vw,1.75rem);
+    .testimonials-heading {
+        font-size: clamp(2rem,4vw,3.25rem);
+        font-weight: 900;
+        line-height: 1;
+        letter-spacing: -.04em;
+        color: var(--blue);
+        margin-bottom: .75rem;
     }
 
-    @media (max-width:768px)  { .media-grid { grid-template-columns:1fr; } }
-    @media (min-width:769px) and (max-width:1024px) { .media-grid { grid-template-columns:1fr 1fr; } }
-
-    .media-card {
-        background:#fff;
-        border-radius:1.25rem;
-        overflow:hidden;
-        cursor:pointer;
-        transition:transform .35s, box-shadow .35s;
-        box-shadow: 0 4px 20px rgba(0,14,71,.06);
-    }
-    .media-card:hover { transform:translateY(-6px); box-shadow:0 20px 40px rgba(0,14,71,.1); }
-
-    .media-card__img-wrap {
-        aspect-ratio:16/9; overflow:hidden;
-        display:flex; align-items:center; justify-content:center;
-    }
-    .media-card__img-wrap img { width:100%; height:100%; object-fit:cover; transition:transform .5s; }
-    .media-card:hover .media-card__img-wrap img { transform:scale(1.06); }
-
-    .media-card__placeholder {
-        width:100%; height:100%;
-        display:flex; align-items:center; justify-content:center;
-        font-size:2rem; font-weight:900; letter-spacing:-.05em;
-        text-transform:uppercase; padding:1rem; text-align:center;
+    .testimonials-sub {
+        font-size: clamp(.9rem,1.2vw,1.05rem);
+        color: var(--dark-grey);
+        opacity: .75;
     }
 
-    .media-card__body { padding:1.5rem; }
-    .media-card__cat { font-size:.62rem; font-weight:700; letter-spacing:.2em; text-transform:uppercase; color:var(--coral); margin-bottom:.5rem; }
-    .media-card__title { font-size:clamp(.95rem,1.5vw,1.15rem); font-weight:700; line-height:1.3; color:var(--blue); margin-bottom:.75rem; }
-    .media-card__date { font-size:.7rem; color:var(--dark-grey); }
-    .media-card__link { display:inline-flex; align-items:center; gap:.4rem; font-size:.7rem; font-weight:700; letter-spacing:.12em; text-transform:uppercase; color:var(--ocean); margin-top:.75rem; transition:gap .3s; }
-    .media-card__link::after { content:'→'; transition:transform .3s; }
-    .media-card__link:hover::after { transform:translateX(4px); }
+    .testimonials-columns {
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+        max-height: 740px;
+        overflow: hidden;
+        -webkit-mask-image: linear-gradient(to bottom, transparent, black 25%, black 75%, transparent);
+        mask-image: linear-gradient(to bottom, transparent, black 25%, black 75%, transparent);
+    }
+
+    .testimonial-col {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        will-change: transform;
+    }
+
+    .testimonial-card {
+        padding: 1.75rem;
+        border-radius: 1.25rem;
+        border: 1px solid rgba(0,14,71,.08);
+        box-shadow: 0 4px 20px rgba(235,79,145,.06);
+        max-width: 320px;
+        width: 100%;
+        background: #fff;
+    }
+
+    .testimonial-card__text {
+        font-size: .92rem;
+        line-height: 1.55;
+        color: var(--blue);
+        margin-bottom: 1.25rem;
+    }
+
+    .testimonial-card__author {
+        display: flex;
+        align-items: center;
+        gap: .65rem;
+    }
+
+    .testimonial-card__avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+
+    .testimonial-card__name {
+        font-size: .85rem;
+        font-weight: 600;
+        letter-spacing: -.02em;
+        color: var(--blue);
+        line-height: 1.2;
+    }
+
+    .testimonial-card__role {
+        font-size: .75rem;
+        color: var(--dark-grey);
+        opacity: .6;
+        letter-spacing: -.01em;
+        line-height: 1.2;
+    }
+
+    /* Hide 2nd column on mobile, 3rd on tablet */
+    .testimonial-col--2 { display: none; }
+    .testimonial-col--3 { display: none; }
+    @media (min-width:769px)  { .testimonial-col--2 { display: flex; } }
+    @media (min-width:1025px) { .testimonial-col--3 { display: flex; } }
 
     /* =====================================================
        BRANDS ROW
@@ -1254,9 +1307,8 @@
         .values-grid { grid-template-columns:repeat(2,1fr); gap:1rem; }
         #values::before { height:50px; }
 
-        /* Media */
-        #media-section { padding:4rem 5%; }
-        .media-header { flex-direction:column; align-items:flex-start; gap:.75rem; }
+        /* Testimonials */
+        #testimonials-section { padding:4rem 5%; }
 
         /* Brands */
         #brands { padding:3rem 5%; }
@@ -1267,7 +1319,7 @@
         .footer-grid { gap:2rem; }
 
         /* General spacing */
-        #values, #about, #products, #media-section { scroll-margin-top:60px; }
+        #values, #about, #products, #testimonials-section { scroll-margin-top:60px; }
     }
 
     @media (max-width:480px) {
@@ -1306,7 +1358,7 @@
 <div class="nav-mobile-drawer" id="nav-drawer">
     <a href="#about" class="drawer-link">About</a>
     <a href="#products" class="drawer-link">Flavours</a>
-    <a href="#media-section" class="drawer-link">News</a>
+    <a href="#testimonials-section" class="drawer-link">Testimonials</a>
     <a href="store-locator.html" class="drawer-link">Find a Store</a>
     <a href="#" class="drawer-cta">Shop Now</a>
 </div>
@@ -1316,7 +1368,7 @@
     <ul class="nav-links">
         <li><a href="#about">About</a></li>
         <li><a href="#products">Flavours</a></li>
-        <li><a href="#media-section">News</a></li>
+        <li><a href="#testimonials-section">Testimonials</a></li>
         <li><a href="store-locator.html">Find a Store</a></li>
         <li><a href="#" class="nav-cta">Shop Now</a></li>
     </ul>
@@ -1657,57 +1709,26 @@
 </section>
 
 <!-- =====================================================
-     MEDIA / NEWS
+     TESTIMONIALS
 ===================================================== -->
-<section id="media-section">
-    <div class="media-header">
-        <h2 class="media-heading reveal">Media<br>&amp; News</h2>
-        <a href="#" class="btn-primary shimmer-btn reveal" style="margin-bottom:.5rem">
-            <span class="shimmer-spark"><span class="shimmer-spark-inner"></span></span>
-            <span class="shimmer-fill"></span>
-            <span class="shimmer-highlight"></span>
-            View All
-        </a>
+<section id="testimonials-section">
+    <div class="testimonials-header reveal">
+        <div class="testimonials-badge">Testimonials</div>
+        <h2 class="testimonials-heading">What People Are Saying</h2>
+        <p class="testimonials-sub">See what Nawty fans have to say about us.</p>
     </div>
 
-    <div class="media-grid">
-
-        <div class="media-card reveal">
-            <div class="media-card__img-wrap">
-                <div class="media-card__placeholder" style="background:linear-gradient(135deg,#fce4f0,#f99fc1); color:#fff;">NAWTY<br>SUMMER</div>
-            </div>
-            <div class="media-card__body">
-                <div class="media-card__cat">Brand News</div>
-                <h3 class="media-card__title">Nawty Water Launches Across South Africa</h3>
-                <p class="media-card__date">March 2025</p>
-                <a href="#" class="media-card__link">Read More</a>
-            </div>
+    <div class="testimonials-columns">
+        <!-- Column 1 -->
+        <div class="testimonial-col testimonial-col--1" id="testi-col-1">
+            <!-- duplicated by JS for infinite scroll -->
         </div>
-
-        <div class="media-card reveal">
-            <div class="media-card__img-wrap">
-                <div class="media-card__placeholder" style="background:linear-gradient(135deg,#FFF3C4,#FFB700); color:rgba(0,0,0,.4);">TASTE<br>THE BOLD</div>
-            </div>
-            <div class="media-card__body">
-                <div class="media-card__cat">Events</div>
-                <h3 class="media-card__title">Nawty Water at Oppikoppi 2025 Festival</h3>
-                <p class="media-card__date">February 2025</p>
-                <a href="#" class="media-card__link">Read More</a>
-            </div>
+        <!-- Column 2 (hidden on mobile) -->
+        <div class="testimonial-col testimonial-col--2" id="testi-col-2">
         </div>
-
-        <div class="media-card reveal">
-            <div class="media-card__img-wrap">
-                <div class="media-card__placeholder" style="background:linear-gradient(135deg,#C8F4FF,#00BFDF); color:#fff;">GET<br>NAWTY</div>
-            </div>
-            <div class="media-card__body">
-                <div class="media-card__cat">Sustainability</div>
-                <h3 class="media-card__title">Our Commitment to Responsible Brewing</h3>
-                <p class="media-card__date">January 2025</p>
-                <a href="#" class="media-card__link">Read More</a>
-            </div>
+        <!-- Column 3 (hidden on tablet) -->
+        <div class="testimonial-col testimonial-col--3" id="testi-col-3">
         </div>
-
     </div>
 </section>
 
@@ -1753,7 +1774,7 @@
                     <li><a href="#">Home</a></li>
                     <li><a href="#about">The Story</a></li>
                     <li><a href="#products">Flavours</a></li>
-                    <li><a href="#media-section">News</a></li>
+                    <li><a href="#testimonials-section">Testimonials</a></li>
                     <li><a href="store-locator.html">Find a Store</a></li>
                 </ul>
             </div>
@@ -2100,6 +2121,95 @@ try {
     }
 
     beamEls.forEach(animateBeam);
+})();
+
+/* =====================================================
+   TESTIMONIALS – infinite scrolling columns
+===================================================== */
+(function(){
+    const testimonials = [
+        { text: "Nawty Water is my go-to at every braai. Light, refreshing, and the passion fruit flavour is absolutely unreal.", image: "https://randomuser.me/api/portraits/women/12.jpg", name: "Lerato Molefe", role: "Lifestyle Blogger" },
+        { text: "Finally a hard seltzer that doesn't taste artificial. The lychee is crisp and clean — perfect for summer days.", image: "https://randomuser.me/api/portraits/men/22.jpg", name: "James van der Merwe", role: "Chef & Restaurateur" },
+        { text: "I brought Nawty Water to a festival and everyone wanted to know where I got it. It's the best seltzer in SA, hands down.", image: "https://randomuser.me/api/portraits/women/28.jpg", name: "Thandi Nkosi", role: "Event Planner" },
+        { text: "The strawberry flavour is incredible. Low cal, great taste, and the can design is fire. My fridge is fully stocked.", image: "https://randomuser.me/api/portraits/men/15.jpg", name: "Dylan September", role: "Fitness Coach" },
+        { text: "I switched from wine to Nawty Water at sundowners and haven't looked back. It's light and the flavours are on point.", image: "https://randomuser.me/api/portraits/women/44.jpg", name: "Aimee Botha", role: "Marketing Manager" },
+        { text: "Nawty Water just hits different. Clean ingredients, bold flavours, and it actually feels like a premium product.", image: "https://randomuser.me/api/portraits/men/32.jpg", name: "Sipho Dlamini", role: "Brand Strategist" },
+        { text: "My friends and I are obsessed with Nawty. The packaging is gorgeous and the taste backs it up every time.", image: "https://randomuser.me/api/portraits/women/65.jpg", name: "Chloe Erasmus", role: "Content Creator" },
+        { text: "As a bartender, I've tried every seltzer out there. Nawty Water is the one I actually drink off-shift.", image: "https://randomuser.me/api/portraits/men/45.jpg", name: "Ruan Viljoen", role: "Bartender" },
+        { text: "Love that it's a local brand doing things right. Great flavour, low sugar, and it looks amazing on the 'gram.", image: "https://randomuser.me/api/portraits/women/56.jpg", name: "Palesa Khumalo", role: "Photographer" },
+    ];
+
+    const col1Data = testimonials.slice(0, 3);
+    const col2Data = testimonials.slice(3, 6);
+    const col3Data = testimonials.slice(6, 9);
+
+    function buildCard(t) {
+        return '<div class="testimonial-card">' +
+            '<div class="testimonial-card__text">' + t.text + '</div>' +
+            '<div class="testimonial-card__author">' +
+                '<img class="testimonial-card__avatar" src="' + t.image + '" alt="' + t.name + '" width="40" height="40">' +
+                '<div><div class="testimonial-card__name">' + t.name + '</div>' +
+                '<div class="testimonial-card__role">' + t.role + '</div></div>' +
+            '</div></div>';
+    }
+
+    function fillColumn(el, data) {
+        // Duplicate the cards for seamless loop
+        var html = '';
+        for (var r = 0; r < 2; r++) {
+            data.forEach(function(t){ html += buildCard(t); });
+        }
+        el.innerHTML = html;
+    }
+
+    var c1 = document.getElementById('testi-col-1');
+    var c2 = document.getElementById('testi-col-2');
+    var c3 = document.getElementById('testi-col-3');
+    if(c1) fillColumn(c1, col1Data);
+    if(c2) fillColumn(c2, col2Data);
+    if(c3) fillColumn(c3, col3Data);
+
+    // Animate columns with GSAP infinite scroll
+    // Force-show hidden columns briefly so we can measure real heights
+    function animateCol(el, duration, direction) {
+        if (!el) return;
+        var cards = el.children;
+        if (!cards.length) return;
+
+        // Temporarily force visibility for measurement
+        var wasHidden = getComputedStyle(el).display === 'none';
+        if (wasHidden) {
+            el.style.display = 'flex';
+            el.style.visibility = 'hidden';
+            el.style.position = 'absolute';
+        }
+
+        // Measure half-height (since we duplicated)
+        var halfH = 0;
+        for (var i = 0; i < cards.length / 2; i++) {
+            halfH += cards[i].offsetHeight + 24; // 1.5rem gap
+        }
+
+        // Restore original styles — CSS media queries take back over
+        if (wasHidden) {
+            el.style.display = '';
+            el.style.visibility = '';
+            el.style.position = '';
+        }
+
+        gsap.set(el, { y: direction === 'up' ? 0 : -halfH, force3D: true });
+        gsap.to(el, {
+            y: direction === 'up' ? -halfH : 0,
+            duration: duration,
+            ease: 'none',
+            repeat: -1,
+            force3D: true,
+        });
+    }
+
+    animateCol(c1, 20, 'up');
+    animateCol(c2, 25, 'up');
+    animateCol(c3, 22, 'up');
 })();
 </script>
 </body>
