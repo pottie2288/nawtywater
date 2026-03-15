@@ -348,10 +348,10 @@
     }
 
     .hero-headline {
-        font-size: clamp(5rem,16vw,16rem);
+        font-size: clamp(3.5rem, 10vw, 10rem);
         font-weight:900; line-height:.82; letter-spacing:-.06em;
         text-transform:uppercase; color:#fff;
-        margin-bottom:1.5rem;
+        margin-bottom: 2.5rem;
         /* overflow moved to lines to prevent clipping italics */
         text-shadow: 0 4px 40px rgba(0,60,100,.2);
     }
@@ -368,11 +368,7 @@
     .hero-headline em { font-style:italic; color:var(--coral); padding-right: 0.1em; }
 
     .hero-tagline {
-        font-size: clamp(.85rem,1.8vw,1.15rem);
-        font-weight:300; letter-spacing:.2em; text-transform:uppercase;
-        color: rgba(255,255,255,.75);
-        margin-bottom:3.5rem;
-        opacity:0;
+        display: none;
     }
 
     /* Three cans row */
@@ -399,7 +395,7 @@
     .hero-can-item.center-can:hover { transform:translateY(-28px) scale(1.12); }
 
     .hero-can-img {
-        height: clamp(140px,22vh,240px);
+        height: clamp(180px, 28vh, 320px);
         width: auto;
         object-fit:contain;
         filter: drop-shadow(0 30px 40px rgba(0,60,100,.35)) drop-shadow(0 8px 14px rgba(0,0,0,.2));
@@ -1044,7 +1040,7 @@
         #hero { padding:8rem 5% 7rem; }
         .hero-cans { gap:1rem; }
         .hero-can-item.center-can { transform:translateY(-10px) scale(1.06); }
-        .hero-can-img { height:clamp(100px,24vw,160px); }
+        .hero-can-img { height: clamp(140px, 30vw, 220px); }
         #hero::after { height:50px; }
 
         /* About */
@@ -1154,7 +1150,7 @@
         <span class="hero-headline-line"><em>Nawty</em></span>
     </h1>
 
-    <p class="hero-tagline">Crisp · Fruity · Refreshing · Made in South Africa</p>
+
 
     <!-- Three cans in a row -->
     <div class="hero-cans">
@@ -1666,7 +1662,6 @@ function runEntrance() {
         const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
         tl.to('.hero-eyebrow',       { opacity:1, duration:.8, delay:.2 })
           .to('.hero-headline-line', { opacity:1, y:0, duration:.85, stagger:.14 }, '-=.5')
-          .to('.hero-tagline',       { opacity:1, duration:.7 }, '-=.35')
           .to('.hero-cans',          { opacity:1, y:0, duration:.8, ease:'power2.out' }, '-=.4')
           .to('.hero-cta',           { opacity:1, duration:.6 }, '-=.3')
           .to('.hero-scroll-cue',    { opacity:1, duration:.5 }, '-=.2');
