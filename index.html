@@ -411,20 +411,27 @@
     }
 
     .hero-cta {
-        display:inline-block;
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
         padding:1rem 3rem;
         background:#fff;
         color:var(--ocean);
         font-family:'Outfit',sans-serif;
         font-size:.8rem; font-weight:700;
         letter-spacing:.15em; text-transform:uppercase;
-        border:none; cursor:pointer;
+        border:1px solid rgba(255,255,255,.1);
+        cursor:pointer;
         border-radius:9999px;
         transition:background .3s, color .3s, transform .2s, box-shadow .3s;
         box-shadow: 0 12px 40px rgba(0,100,140,.25);
         opacity:0;
+        position:relative;
+        overflow:hidden;
+        z-index:0;
     }
     .hero-cta:hover { background:var(--coral); color:#fff; transform:translateY(-3px); box-shadow:0 18px 50px rgba(235,79,145,.4); }
+    .hero-cta:active { transform:translateY(1px); }
 
     /* scroll cue */
     .hero-scroll-cue {
@@ -436,6 +443,56 @@
     .hero-scroll-cue span { font-size:.6rem; font-weight:700; letter-spacing:.3em; text-transform:uppercase; color:rgba(255,255,255,.5); }
     .scroll-line { width:1px; height:42px; background:linear-gradient(to bottom,rgba(255,255,255,.6),transparent); animation:lineAnim 2.2s ease infinite; }
     @keyframes lineAnim { 0%{transform:scaleY(0);transform-origin:top;} 50%{transform:scaleY(1);transform-origin:top;} 51%{transform-origin:bottom;} 100%{transform:scaleY(0);transform-origin:bottom;} }
+
+    /* =====================================================
+       BEAM COLLISION ANIMATION
+    ===================================================== */
+    .beam {
+        position: absolute;
+        left: 0;
+        top: 80px;
+        width: 1px;
+        border-radius: 9999px;
+        background: linear-gradient(to top, rgba(255,255,255,.5), rgba(150,220,255,.4), transparent);
+        pointer-events: none;
+        z-index: 1;
+        opacity: 0;
+    }
+
+    .beam-collision-bar {
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        pointer-events: none;
+        z-index: 1;
+        background: transparent;
+    }
+
+    .explosion-particle {
+        position: absolute;
+        width: 3px;
+        height: 3px;
+        border-radius: 50%;
+        background: linear-gradient(to bottom, rgba(255,255,255,.7), rgba(150,220,255,.5));
+        pointer-events: none;
+        z-index: 2;
+        opacity: 1;
+    }
+
+    .explosion-flash {
+        position: absolute;
+        width: 40px;
+        height: 2px;
+        border-radius: 9999px;
+        background: linear-gradient(to right, transparent, rgba(255,255,255,.5), transparent);
+        pointer-events: none;
+        z-index: 2;
+        filter: blur(1px);
+        transform: translate(-50%, -50%);
+        opacity: 0;
+    }
 
     /* =====================================================
        MARQUEE BAND
@@ -500,52 +557,189 @@
     }
 
     .btn-primary {
-        display:inline-block;
+        display:inline-flex;
+        align-items:center;
+        justify-content:center;
         padding:.85rem 2.5rem;
         background:var(--ocean); color:#fff;
         font-family:'Outfit',sans-serif;
         font-size:.78rem; font-weight:700;
         letter-spacing:.15em; text-transform:uppercase;
-        border:none; cursor:pointer;
+        border:1px solid rgba(255,255,255,.1);
+        cursor:pointer;
         transition:background .3s, transform .2s, box-shadow .3s;
         border-radius:9999px;
         margin-top:.75rem;
         box-shadow: 0 8px 24px rgba(0,143,181,.3);
+        position:relative;
+        overflow:hidden;
+        z-index:0;
     }
     .btn-primary:hover { background:var(--coral); transform:translateY(-2px); box-shadow:0 12px 30px rgba(235,79,145,.4); }
+    .btn-primary:active { transform:translateY(1px); }
 
-    /* About images — one hero splash + two small cans */
-    .about-images {
-        display:grid;
-        grid-template-columns: 1fr 1fr;
-        grid-template-rows: auto auto;
-        gap: clamp(.75rem,2vw,1.25rem);
-        align-items: stretch;
+    /* =====================================================
+       SHIMMER BUTTON EFFECT
+    ===================================================== */
+    @keyframes shimmer-slide {
+        0%   { transform: translateX(-100%); }
+        100% { transform: translateX(100%); }
     }
 
-    .about-splash-main {
-        grid-column: 1 / -1;
+    @keyframes spin-around {
+        0%          { transform: translateZ(0) rotate(0); }
+        15%, 35%    { transform: translateZ(0) rotate(90deg); }
+        65%, 85%    { transform: translateZ(0) rotate(270deg); }
+        100%        { transform: translateZ(0) rotate(360deg); }
+    }
+
+    .shimmer-btn {
+        position:relative;
+        overflow:hidden;
+        z-index:0;
+    }
+
+    /* Spark container — blurred rotating conic gradient */
+    .shimmer-spark {
+        position:absolute;
+        inset:0;
+        overflow:visible;
+        z-index:-3;
+        filter:blur(2px);
+        pointer-events:none;
+    }
+
+    .shimmer-spark-inner {
+        position:absolute;
+        inset:0;
+        aspect-ratio:1;
+        animation: shimmer-slide 3s ease-in-out infinite alternate;
+    }
+
+    .shimmer-spark-inner::before {
+        content:'';
+        position:absolute;
+        inset:-100%;
+        width:auto;
+        background: conic-gradient(from 225deg, transparent 0, rgba(255,255,255,.7) 90deg, transparent 90deg);
+        animation: spin-around 6s linear infinite;
+    }
+
+    /* Inner fill — covers the spark except the edge shimmer */
+    .shimmer-fill {
+        position:absolute;
+        inset: 0.05em;
+        border-radius:inherit;
+        z-index:-2;
+        pointer-events:none;
+    }
+
+    .hero-cta .shimmer-fill { background:#fff; }
+    .btn-primary .shimmer-fill { background:var(--ocean); }
+
+    .hero-cta:hover .shimmer-fill { background:var(--coral); }
+    .btn-primary:hover .shimmer-fill { background:var(--coral); }
+
+    /* Inset highlight glow */
+    .shimmer-highlight {
+        position:absolute;
+        inset:0;
+        border-radius:inherit;
+        z-index:-1;
+        pointer-events:none;
+        box-shadow: inset 0 -8px 10px rgba(255,255,255,.12);
+        transition: box-shadow .3s;
+    }
+
+    .shimmer-btn:hover .shimmer-highlight { box-shadow: inset 0 -6px 10px rgba(255,255,255,.24); }
+    .shimmer-btn:active .shimmer-highlight { box-shadow: inset 0 -10px 10px rgba(255,255,255,.24); }
+
+    /* About carousel */
+    .about-carousel {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 1/1;
+        overflow: hidden;
+        border-radius: 1.25rem;
+    }
+
+    .carousel-track {
+        display: flex;
+        height: 100%;
+        transition: transform 1s cubic-bezier(.4,0,.2,1);
+    }
+
+    .carousel-slide {
+        flex: 0 0 100%;
+        position: relative;
+        cursor: pointer;
+        perspective: 1200px;
+    }
+
+    .carousel-slide-inner {
+        width: 100%;
+        height: 100%;
+        background: #1D1F2F;
         border-radius: 1.25rem;
         overflow: hidden;
-        aspect-ratio: 3/2;
         position: relative;
+        transition: transform .5s cubic-bezier(.4,0,.2,1);
+        transform-origin: bottom;
+        transform: scale(.98) rotateX(8deg);
     }
-    .about-splash-main img {
-        width:100%; height:100%; object-fit:cover;
-        transition:transform .5s cubic-bezier(.34,1.56,.64,1);
-    }
-    .about-splash-main:hover img { transform:scale(1.04); }
 
-    .about-can-wrap {
-        background: rgba(0,143,181,.06);
-        border-radius:1rem;
-        overflow:hidden;
-        aspect-ratio:1/1;
-        display:flex; align-items:center; justify-content:center;
-        transition:transform .4s cubic-bezier(.34,1.56,.64,1), box-shadow .4s;
+    .carousel-slide.active .carousel-slide-inner {
+        transform: scale(1) rotateX(0deg);
     }
-    .about-can-wrap:hover { transform:translateY(-8px); box-shadow:0 20px 40px rgba(0,143,181,.15); }
-    .about-can-wrap img { width:100%; height:100%; object-fit:cover; object-position:center top; }
+
+    .carousel-slide-img {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center;
+        opacity: .5;
+        transition: opacity .6s ease-in-out;
+    }
+
+    .carousel-slide.active .carousel-slide-img {
+        opacity: 1;
+    }
+
+    .carousel-controls {
+        display: flex;
+        justify-content: center;
+        gap: .5rem;
+        margin-top: 1rem;
+    }
+
+    .carousel-arrow {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0,143,181,.08);
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        transition: transform .2s, background .2s;
+    }
+    .carousel-arrow:hover { background: rgba(0,143,181,.15); transform:translateY(-2px); }
+    .carousel-arrow:active { transform:translateY(2px); }
+
+    .carousel-arrow svg {
+        width: 20px;
+        height: 20px;
+        stroke: var(--ocean);
+        stroke-width: 1.5;
+        fill: none;
+    }
+
+    .carousel-arrow.prev svg {
+        transform: rotate(180deg);
+    }
 
     /* =====================================================
        PRODUCTS SECTION
@@ -1046,11 +1240,7 @@
         /* About */
         #about { padding:4rem 5%; }
         .about-inner { gap:2.5rem; }
-        .about-images {
-            grid-template-columns:1fr 1fr;
-            grid-template-rows:auto auto;
-        }
-        .about-splash-main { grid-column: 1 / -1; aspect-ratio:3/2; }
+        .about-carousel { aspect-ratio:4/3; }
 
         /* Products */
         #products { padding:4rem 5%; }
@@ -1086,11 +1276,7 @@
         .hero-can-img { height:clamp(80px,20vw,130px); }
         .hero-cta { padding:.85rem 2rem; font-size:.75rem; }
         .values-grid { grid-template-columns:1fr 1fr; }
-        .about-images {
-            grid-template-columns:1fr;
-        }
-        .about-splash-main { grid-column:1; }
-        .about-can-wrap:last-child { display:none; } /* show only one can on very small screens */
+        .about-carousel { aspect-ratio:4/5; }
     }
     </style>
 </head>
@@ -1143,6 +1329,16 @@
      HERO — Ocean gradient, bright & fresh
 ===================================================== -->
 <section id="hero">
+    <!-- Beam collision animation -->
+    <div class="beam" data-beam='{"x":10,"duration":7,"delay":2,"repeatDelay":3,"height":56}'></div>
+    <div class="beam" data-beam='{"x":600,"duration":3,"delay":4,"repeatDelay":3,"height":56}'></div>
+    <div class="beam" data-beam='{"x":100,"duration":7,"delay":0,"repeatDelay":7,"height":24}'></div>
+    <div class="beam" data-beam='{"x":400,"duration":5,"delay":4,"repeatDelay":14,"height":56}'></div>
+    <div class="beam" data-beam='{"x":800,"duration":11,"delay":0,"repeatDelay":2,"height":80}'></div>
+    <div class="beam" data-beam='{"x":1000,"duration":4,"delay":0,"repeatDelay":2,"height":48}'></div>
+    <div class="beam" data-beam='{"x":1200,"duration":6,"delay":2,"repeatDelay":4,"height":24}'></div>
+    <div class="beam-collision-bar" id="beam-collision-bar"></div>
+
     <p class="hero-eyebrow">South Africa's Boldest Hard Seltzer</p>
 
     <h1 class="hero-headline">
@@ -1168,7 +1364,12 @@
         </div>
     </div>
 
-    <a href="#products" class="hero-cta">Meet the Flavours</a>
+    <a href="#products" class="hero-cta shimmer-btn">
+        <span class="shimmer-spark"><span class="shimmer-spark-inner"></span></span>
+        <span class="shimmer-fill"></span>
+        <span class="shimmer-highlight"></span>
+        Meet the Flavours
+    </a>
 
     <div class="hero-scroll-cue" aria-hidden="true">
         <span>Scroll</span>
@@ -1268,22 +1469,56 @@
             <p class="about-body">
                 Low calorie. No compromise. Three bold flavours made for people who live out loud.
             </p>
-            <a href="#products" class="btn-primary">Explore Flavours</a>
+            <a href="#products" class="btn-primary shimmer-btn">
+                <span class="shimmer-spark"><span class="shimmer-spark-inner"></span></span>
+                <span class="shimmer-fill"></span>
+                <span class="shimmer-highlight"></span>
+                Explore Flavours
+            </a>
         </div>
 
-        <div class="about-images reveal-right">
-            <!-- Main splash feature — autoplay video -->
-            <div class="about-splash-main">
-                <video autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;object-position:center 35%;border-radius:inherit;">
-                    <source src="nawtycans/mainvideo.mp4" type="video/mp4">
-                </video>
+        <div class="reveal-right">
+            <div class="about-carousel" id="about-carousel">
+                <div class="carousel-track" id="carousel-track">
+                    <div class="carousel-slide active">
+                        <div class="carousel-slide-inner">
+                            <img class="carousel-slide-img" src="nawtycans/carousel photos/PNG image.png" alt="Nawty Water">
+                        </div>
+                    </div>
+                    <div class="carousel-slide">
+                        <div class="carousel-slide-inner">
+                            <img class="carousel-slide-img" src="nawtycans/carousel photos/PNG image 2.png" alt="Nawty Water">
+                        </div>
+                    </div>
+                    <div class="carousel-slide">
+                        <div class="carousel-slide-inner">
+                            <img class="carousel-slide-img" src="nawtycans/carousel photos/PNG image 3.png" alt="Nawty Water">
+                        </div>
+                    </div>
+                    <div class="carousel-slide">
+                        <div class="carousel-slide-inner">
+                            <img class="carousel-slide-img" src="nawtycans/carousel photos/PNG image 4.png" alt="Nawty Water">
+                        </div>
+                    </div>
+                    <div class="carousel-slide">
+                        <div class="carousel-slide-inner">
+                            <img class="carousel-slide-img" src="nawtycans/carousel photos/PNG image 5.png" alt="Nawty Water">
+                        </div>
+                    </div>
+                    <div class="carousel-slide">
+                        <div class="carousel-slide-inner">
+                            <img class="carousel-slide-img" src="nawtycans/carousel photos/PNG image 6.png" alt="Nawty Water">
+                        </div>
+                    </div>
+                </div>
             </div>
-            <!-- Two secondary photos -->
-            <div class="about-can-wrap">
-                <img src="nawtycans/story1.jpg" alt="Nawty Story 1">
-            </div>
-            <div class="about-can-wrap">
-                <img src="nawtycans/story2.jpeg" alt="Nawty Story 2">
+            <div class="carousel-controls">
+                <button class="carousel-arrow prev" id="carousel-prev" aria-label="Previous slide">
+                    <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
+                <button class="carousel-arrow next" id="carousel-next" aria-label="Next slide">
+                    <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </button>
             </div>
         </div>
 
@@ -1427,7 +1662,12 @@
 <section id="media-section">
     <div class="media-header">
         <h2 class="media-heading reveal">Media<br>&amp; News</h2>
-        <a href="#" class="btn-primary reveal" style="margin-bottom:.5rem">View All</a>
+        <a href="#" class="btn-primary shimmer-btn reveal" style="margin-bottom:.5rem">
+            <span class="shimmer-spark"><span class="shimmer-spark-inner"></span></span>
+            <span class="shimmer-fill"></span>
+            <span class="shimmer-highlight"></span>
+            View All
+        </a>
     </div>
 
     <div class="media-grid">
@@ -1702,6 +1942,165 @@ try {
     document.querySelectorAll('.reveal,.reveal-scale,.reveal-left,.reveal-right')
         .forEach(el => { el.style.opacity = '1'; el.style.transform = 'none'; });
 }
+
+/* -------------------------------------------------
+   ABOUT CAROUSEL
+------------------------------------------------- */
+(function() {
+    const track = document.getElementById('carousel-track');
+    const slides = track.querySelectorAll('.carousel-slide');
+    const prevBtn = document.getElementById('carousel-prev');
+    const nextBtn = document.getElementById('carousel-next');
+    let current = 0;
+
+    function goTo(index) {
+        if (index < 0) index = slides.length - 1;
+        if (index >= slides.length) index = 0;
+        current = index;
+        track.style.transform = 'translateX(-' + (current * 100) + '%)';
+        slides.forEach(function(s, i) {
+            s.classList.toggle('active', i === current);
+        });
+    }
+
+    prevBtn.addEventListener('click', function() { goTo(current - 1); });
+    nextBtn.addEventListener('click', function() { goTo(current + 1); });
+
+    // Mouse-follow parallax on active slide
+    slides.forEach(function(slide) {
+        var inner = slide.querySelector('.carousel-slide-inner');
+        var mx = 0, my = 0;
+
+        slide.addEventListener('mousemove', function(e) {
+            if (!slide.classList.contains('active')) return;
+            var r = inner.getBoundingClientRect();
+            mx = e.clientX - (r.left + r.width / 2);
+            my = e.clientY - (r.top + r.height / 2);
+            inner.style.transform = 'scale(1) rotateX(0deg) translate3d(' + (mx / 30) + 'px,' + (my / 30) + 'px,0)';
+        });
+
+        slide.addEventListener('mouseleave', function() {
+            mx = 0; my = 0;
+            if (slide.classList.contains('active')) {
+                inner.style.transform = 'scale(1) rotateX(0deg)';
+            }
+        });
+
+        // Click inactive slide to navigate
+        slide.addEventListener('click', function() {
+            var idx = Array.from(slides).indexOf(slide);
+            if (idx !== current) goTo(idx);
+        });
+    });
+
+    // Initialise
+    goTo(0);
+})();
+
+/* -------------------------------------------------
+   BEAM COLLISION ANIMATION
+------------------------------------------------- */
+(function() {
+    const hero = document.getElementById('hero');
+    const collisionBar = document.getElementById('beam-collision-bar');
+    const beamEls = hero.querySelectorAll('.beam');
+
+    function createExplosion(x, y) {
+        // Horizontal flash
+        const flash = document.createElement('div');
+        flash.className = 'explosion-flash';
+        flash.style.left = x + 'px';
+        flash.style.top = y + 'px';
+        hero.appendChild(flash);
+
+        gsap.fromTo(flash,
+            { opacity: 0, scaleX: 0 },
+            { opacity: 1, scaleX: 1, duration: 0.3, ease: 'power2.out',
+              onComplete: function() {
+                gsap.to(flash, { opacity: 0, duration: 1.2, ease: 'power2.out',
+                    onComplete: function() { flash.remove(); }
+                });
+              }
+            }
+        );
+
+        // Particles
+        var count = 20;
+        for (var i = 0; i < count; i++) {
+            var particle = document.createElement('div');
+            particle.className = 'explosion-particle';
+            particle.style.left = x + 'px';
+            particle.style.top = y + 'px';
+            hero.appendChild(particle);
+
+            var dirX = Math.floor(Math.random() * 80 - 40);
+            var dirY = Math.floor(Math.random() * -50 - 10);
+            var dur = Math.random() * 1.5 + 0.5;
+
+            gsap.to(particle, {
+                x: dirX,
+                y: dirY,
+                opacity: 0,
+                duration: dur,
+                ease: 'power2.out',
+                onComplete: (function(p) {
+                    return function() { p.remove(); };
+                })(particle)
+            });
+        }
+    }
+
+    function animateBeam(beamEl) {
+        var config = JSON.parse(beamEl.getAttribute('data-beam'));
+        var heroRect = hero.getBoundingClientRect();
+        var heroHeight = hero.offsetHeight;
+
+        // Position beam at its X coordinate
+        beamEl.style.left = config.x + 'px';
+        beamEl.style.height = config.height + 'px';
+
+        function runCycle() {
+            // Reset to top
+            gsap.set(beamEl, { y: -200, opacity: 1 });
+
+            // Animate downward
+            gsap.to(beamEl, {
+                y: heroHeight + 200,
+                duration: config.duration || 8,
+                ease: 'none',
+                delay: 0,
+                onUpdate: function() {
+                    // Check collision with bottom
+                    var beamRect = beamEl.getBoundingClientRect();
+                    var barRect = collisionBar.getBoundingClientRect();
+
+                    if (beamRect.bottom >= barRect.top && beamEl._collided !== true) {
+                        beamEl._collided = true;
+                        // Get relative position within hero
+                        var heroR = hero.getBoundingClientRect();
+                        var relX = beamRect.left - heroR.left + beamRect.width / 2;
+                        var relY = beamRect.bottom - heroR.top;
+
+                        createExplosion(relX, relY);
+
+                        // Hide beam immediately on collision
+                        gsap.set(beamEl, { opacity: 0 });
+                    }
+                },
+                onComplete: function() {
+                    beamEl._collided = false;
+                    // Wait repeatDelay then restart
+                    setTimeout(runCycle, (config.repeatDelay || 0) * 1000);
+                }
+            });
+        }
+
+        // Initial delay
+        setTimeout(runCycle, (config.delay || 0) * 1000);
+    }
+
+    beamEls.forEach(animateBeam);
+})();
 </script>
 </body>
 </html>
