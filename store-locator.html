@@ -60,7 +60,7 @@
        NAV
     ===================================================== */
     .site-nav {
-        position: fixed; top: 0; left: 0; right: 0; z-index: 2000;
+        position: fixed; top: 0; left: 0; right: 0; z-index: 3000;
         display: flex; align-items: center; justify-content: space-between;
         padding: 1.6rem 5%;
         transition: background .4s, padding .4s, backdrop-filter .4s;
@@ -156,8 +156,8 @@
     .locator-wrap {
         display: grid;
         grid-template-columns: 380px 1fr;
-        height: calc(100vh - 200px);
-        min-height: 600px;
+        height: calc(100vh - 380px);
+        min-height: 500px;
         position: sticky;
         top: 64px;
     }
@@ -242,11 +242,11 @@
     }
     .chip:hover,
     .chip.active { border-color: var(--blue); color: var(--blue); background: rgba(0,14,71,.05); }
-    .chip.chain-pnp.active    { border-color: var(--red); color: var(--red); background: rgba(184,34,58,.06); }
-    .chip.chain-checkers.active { border-color: #007b40; color: #007b40; background: rgba(0,123,64,.06); }
-    .chip.chain-woolworths.active { border-color: #1a1a1a; color: #1a1a1a; background: rgba(0,0,0,.05); }
-    .chip.chain-spar.active   { border-color: #dc1d2e; color: #dc1d2e; background: rgba(220,29,46,.06); }
-    .chip.chain-dischem.active { border-color: #005ba1; color: #005ba1; background: rgba(0,91,161,.06); }
+    .chip.chain-pnp.active    { border-color: var(--coral); color: var(--coral); background: rgba(235,79,145,.06); }
+    .chip.chain-checkers.active { border-color: var(--ocean); color: var(--ocean); background: rgba(0,143,181,.06); }
+    .chip.chain-woolworths.active { border-color: #003c64; color: #003c64; background: rgba(0,60,100,.05); }
+    .chip.chain-spar.active   { border-color: #ff6eb4; color: #ff6eb4; background: rgba(255,110,180,.06); }
+    .chip.chain-dischem.active { border-color: var(--ocean-light); color: var(--ocean-light); background: rgba(0,191,223,.06); }
 
     .results-count {
         padding: .6rem 1.25rem;
@@ -307,11 +307,11 @@
         color: #fff;
         margin-top: 2px;
     }
-    .badge-pnp       { background: var(--red); }
-    .badge-checkers  { background: #007b40; }
-    .badge-woolworths{ background: #1a1a1a; }
-    .badge-spar      { background: #dc1d2e; }
-    .badge-dischem   { background: #005ba1; }
+    .badge-pnp       { background: var(--coral); }
+    .badge-checkers  { background: var(--ocean); }
+    .badge-woolworths{ background: #003c64; }
+    .badge-spar      { background: #ff6eb4; }
+    .badge-dischem   { background: var(--ocean-light); }
 
     .store-card-info { flex: 1; min-width: 0; }
     .store-card-name {
@@ -325,7 +325,7 @@
     .store-card-dir {
         font-size: .65rem; font-weight: 700;
         letter-spacing: .1em; text-transform: uppercase;
-        color: var(--red); margin-top: .45rem;
+        color: var(--coral); margin-top: .45rem;
         display: inline-flex; align-items: center; gap: .3rem;
         transition: gap .2s;
     }
@@ -351,7 +351,7 @@
     }
 
     @media (max-width: 900px) {
-        #map { height: 420px; }
+        #map { height: 300px; }
     }
 
     /* Custom Leaflet marker */
@@ -376,11 +376,11 @@
         line-height: 1;
         text-align: center;
     }
-    .nawty-marker.m-pnp       { background: var(--red); }
-    .nawty-marker.m-checkers  { background: #007b40; }
-    .nawty-marker.m-woolworths{ background: #1a1a1a; }
-    .nawty-marker.m-spar      { background: #dc1d2e; }
-    .nawty-marker.m-dischem   { background: #005ba1; }
+    .nawty-marker.m-pnp       { background: var(--coral); }
+    .nawty-marker.m-checkers  { background: var(--ocean); }
+    .nawty-marker.m-woolworths{ background: #003c64; }
+    .nawty-marker.m-spar      { background: #ff6eb4; }
+    .nawty-marker.m-dischem   { background: var(--ocean-light); }
 
     /* Leaflet popup override */
     .leaflet-popup-content-wrapper {
@@ -420,31 +420,172 @@
        BOTTOM STRIP
     ===================================================== */
     .locator-footer-strip {
-        background: var(--blue);
-        padding: 3rem 5%;
+        background: linear-gradient(135deg, var(--blue) 0%, #003c64 100%);
+        padding: 4rem 5%;
         display: flex;
         align-items: center;
         justify-content: space-between;
         flex-wrap: wrap;
         gap: 1.5rem;
+        position: relative;
+        overflow: hidden;
     }
-    .strip-text h3 { font-size: clamp(1.2rem,3vw,2rem); font-weight: 800; color: #fff; letter-spacing: -.03em; line-height: 1.1; }
-    .strip-text p  { font-size: .85rem; color: rgba(255,255,255,.4); margin-top: .35rem; }
+    .locator-footer-strip::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(135deg, var(--coral) 0%, var(--ocean) 100%);
+        opacity: 0.9;
+        z-index: 0;
+    }
+    .strip-text { position: relative; z-index: 1; }
+    .strip-text h3 { font-size: clamp(1.5rem,4vw,2.5rem); font-weight: 800; color: #fff; letter-spacing: -.03em; line-height: 1.1; }
+    .strip-text p  { font-size: .95rem; color: rgba(255,255,255,.8); margin-top: .5rem; }
     .btn-strip {
-        padding: .85rem 2.5rem;
-        background: #fff; color: var(--blue);
+        position: relative; z-index: 1;
+        padding: 1rem 3rem;
+        background: #fff; color: var(--ocean);
         font-family: 'Outfit', sans-serif;
-        font-size: .78rem; font-weight: 700;
+        font-size: .85rem; font-weight: 700;
         letter-spacing: .15em; text-transform: uppercase;
         border: none; cursor: pointer;
         border-radius: 9999px;
-        transition: background .3s, color .3s;
+        transition: all .3s;
         white-space: nowrap;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
     }
-    .btn-strip:hover { background: var(--red); color: #fff; }
+    .btn-strip:hover { background: var(--blue); color: #fff; transform: translateY(-3px); box-shadow: 0 15px 40px rgba(0,0,0,0.2); }
+
+    /* =====================================================
+       MOBILE NAV & HAMBURGER
+    ===================================================== */
+    .nav-hamburger {
+        display:none;
+        align-items:center;
+        justify-content:center;
+        width:44px; height:44px;
+        background:none; border:none;
+        cursor:pointer; padding:0;
+        z-index:3000;
+        transition: transform 0.3s ease;
+    }
+    .nav-hamburger svg {
+        width: 32px; height: 32px;
+        stroke: var(--blue);
+        fill: none;
+        stroke-width: 2.5;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .site-nav.solid .nav-hamburger svg { stroke: var(--blue); }
+    .nav-hamburger.open svg { 
+        transform: rotate(-45deg); 
+        stroke: var(--blue) !important; 
+    }
+
+    .nav-hamburger path {
+        transition: stroke-dasharray 0.5s cubic-bezier(0.4, 0, 0.2, 1),
+                    stroke-dashoffset 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .nav-hamburger path:first-child {
+        stroke-dasharray: 12 63;
+    }
+    .nav-hamburger.open path:first-child {
+        stroke-dasharray: 20 300;
+        stroke-dashoffset: -32.42px;
+    }
+
+    .nav-mobile-drawer {
+        position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+        background: linear-gradient(160deg, #0077A8 0%, #00A8CC 50%, #FFF8EE 100%);
+        z-index: 2000; display: flex; flex-direction: column;
+        align-items: center; justify-content: center; gap: 2rem;
+        opacity: 0; pointer-events: none; transition: opacity .4s ease;
+    }
+    .nav-mobile-drawer.open { opacity: 1; pointer-events: all; }
+    .nav-mobile-drawer a {
+        font-size: clamp(1.5rem,8vw,2.5rem); font-weight: 800;
+        letter-spacing: -.02em; text-transform: uppercase; color: #fff;
+        transition: color .2s, transform .2s;
+    }
+    .nav-mobile-drawer a:hover { color: var(--coral); transform: translateX(6px); }
+    .nav-mobile-drawer .drawer-cta {
+        margin-top: .5rem; padding: 1rem 3rem;
+        background: #fff; color: var(--ocean);
+        border-radius: 9999px; font-size: 1rem; font-weight: 700; letter-spacing: .1em;
+    }
+
+    @media (max-width: 900px) {
+        .nav-links { display: none; }
+        .nav-hamburger { display: flex; }
+    }
+
+
+    /* =====================================================
+       MOBILE VIEW TOGGLE
+    ===================================================== */
+    .mobile-toggle-btn {
+        display: none;
+        position: fixed;
+        bottom: 2rem;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 2500;
+        padding: 0.9rem 2rem;
+        background: var(--coral);
+        color: #fff;
+        border: none;
+        border-radius: 9999px;
+        font-family: 'Outfit', sans-serif;
+        font-size: 0.85rem;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        box-shadow: 0 10px 30px rgba(235, 79, 145, 0.5);
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(.175, .885, .32, 1.275);
+        align-items: center;
+        gap: 0.6rem;
+    }
+    .mobile-toggle-btn:active { transform: translateX(-50%) scale(0.95); }
+    .mobile-toggle-btn svg { width: 18px; height: 18px; fill: currentColor; }
+
+    @media (max-width: 900px) {
+        .mobile-toggle-btn { display: flex; }
+        
+        /* Default mobile state: List shown, Map hidden */
+        .locator-wrap:not(.show-map) #map { display: none; }
+        .locator-wrap:not(.show-map) .sidebar { display: flex; height: auto; border-right: none; }
+        
+        /* Show map state: List hidden, Map shown */
+        .locator-wrap.show-map { 
+            grid-template-rows: 1fr; 
+            height: calc(100vh - 80px); /* Leave room for header */
+        }
+        .locator-wrap.show-map .sidebar { display: none; }
+        .locator-wrap.show-map #map { 
+            display: block; 
+            height: 100%; 
+            width: 100%;
+        }
+        
+        /* Adjust header padding on mobile to give more space */
+        .page-header { padding-bottom: 4rem; }
+    }
     </style>
 </head>
 <body>
+
+<!-- MOBILE DRAWER -->
+<div class="nav-mobile-drawer" id="nav-drawer">
+    <a href="index.html" class="drawer-link">Home</a>
+    <a href="index.html#about" class="drawer-link">The Story</a>
+    <a href="index.html#products" class="drawer-link">Flavours</a>
+    <a href="store-locator.html" class="drawer-link">Find a Store</a>
+    <a href="contact.html" class="drawer-link">Contact Us</a>
+    <a href="#" class="drawer-cta">Shop Now</a>
+</div>
 
 <!-- NAV -->
 <nav class="site-nav on-hero">
@@ -453,8 +594,15 @@
         <li><a href="index.html#about">About</a></li>
         <li><a href="index.html#products">Flavours</a></li>
         <li><a href="store-locator.html" class="nav-active">Find a Store</a></li>
+        <li><a href="contact.html">Contact Us</a></li>
         <li><a href="#" class="nav-cta">Shop Now</a></li>
     </ul>
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Menu">
+        <svg viewBox="0 0 32 32">
+            <path d="M27 10 13 10C10.8 10 9 8.2 9 6 9 3.5 10.8 2 13 2 15.2 2 17 3.8 17 6L17 26C17 28.2 18.8 30 21 30 23.2 30 25 28.2 25 26 25 23.8 23.2 22 21 22L7 22" />
+            <path d="M7 16 27 16" />
+        </svg>
+    </button>
 </nav>
 
 <!-- PAGE HEADER -->
@@ -503,6 +651,12 @@
     </div>
     <a href="mailto:info@nawtywater.co.za" class="btn-strip">Contact Us</a>
 </div>
+
+<!-- MOBILE TOGGLE BUTTON -->
+<button id="mobile-view-toggle" class="mobile-toggle-btn">
+    <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+    <span>View on Map</span>
+</button>
 
 <script>
 'use strict';
@@ -615,11 +769,11 @@ const STORES = [
    CHAIN COLOUR CONFIG
 ===================================================== */
 const CHAIN_STYLES = {
-    "Pick n Pay":  { badge:"PnP",  cls:"pnp",        color:"#b8223a" },
-    "Checkers":    { badge:"CHK",  cls:"checkers",   color:"#007b40" },
-    "Woolworths":  { badge:"WW",   cls:"woolworths", color:"#1a1a1a" },
-    "SPAR":        { badge:"SPAR", cls:"spar",       color:"#dc1d2e" },
-    "DisChem":     { badge:"DC",   cls:"dischem",    color:"#005ba1" },
+    "Pick n Pay":  { badge:"PnP",  cls:"pnp",        color:"#eb4f91" },
+    "Checkers":    { badge:"CHK",  cls:"checkers",   color:"#008FB5" },
+    "Woolworths":  { badge:"WW",   cls:"woolworths", color:"#003c64" },
+    "SPAR":        { badge:"SPAR", cls:"spar",       color:"#ff6eb4" },
+    "DisChem":     { badge:"DC",   cls:"dischem",    color:"#00BFDF" },
 };
 
 /* =====================================================
@@ -629,6 +783,44 @@ let activeChain  = "all";
 let searchQuery  = "";
 let markers      = {};   // index → Leaflet marker
 let activeIndex  = null;
+let isMapView    = false; // Track mobile view state
+
+/* =====================================================
+   MOBILE TOGGLE LOGIC
+===================================================== */
+const toggleBtn = document.getElementById('mobile-view-toggle');
+const locatorWrap = document.querySelector('.locator-wrap');
+
+toggleBtn.addEventListener('click', () => {
+    isMapView = !isMapView;
+    
+    if (isMapView) {
+        locatorWrap.classList.add('show-map');
+        toggleBtn.innerHTML = `
+            <svg viewBox="0 0 24 24"><path d="M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z"/></svg>
+            <span>View List</span>
+        `;
+        // Ensure map renders correctly when container becomes visible
+        setTimeout(() => {
+            map.invalidateSize();
+            // If there's an active marker, zoom to it
+            if (activeIndex !== null) {
+                const s = STORES[activeIndex];
+                map.setView([s.lat, s.lng], 15);
+            }
+        }, 100);
+        
+        // Scroll to the map container for better context
+        locatorWrap.scrollIntoView({ behavior: 'smooth' });
+    } else {
+        locatorWrap.classList.remove('show-map');
+        toggleBtn.innerHTML = `
+            <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+            <span>View on Map</span>
+        `;
+        window.scrollTo({ top: locatorWrap.offsetTop - 80, behavior: 'smooth' });
+    }
+});
 
 /* =====================================================
    MAP INIT
@@ -805,6 +997,39 @@ document.getElementById('filter-chips').addEventListener('click', e => {
 /* =====================================================
    INIT
 ===================================================== */
+/* =====================================================
+   MOBILE MENU LOGIC
+===================================================== */
+const hamburgerBtn = document.getElementById('nav-hamburger');
+const mobileDrawer = document.getElementById('nav-drawer');
+
+if (hamburgerBtn && mobileDrawer) {
+    hamburgerBtn.addEventListener('click', () => {
+        const isOpen = hamburgerBtn.classList.toggle('open');
+        mobileDrawer.classList.toggle('open', isOpen);
+        document.body.style.overflow = isOpen ? 'hidden' : '';
+    });
+
+    // Close drawer when a link inside it is clicked
+    mobileDrawer.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            hamburgerBtn.classList.remove('open');
+            mobileDrawer.classList.remove('open');
+            document.body.style.overflow = '';
+        });
+    });
+}
+
+/* =====================================================
+   NAV SCROLL BEHAVIOR
+===================================================== */
+const navEl = document.querySelector('.site-nav');
+if (navEl) {
+    window.addEventListener('scroll', () => {
+        navEl.classList.toggle('solid', window.scrollY > 40);
+    }, { passive: true });
+}
+
 // Pre-filter by ?chain= query parameter (e.g. from index.html brands section)
 const urlParams = new URLSearchParams(window.location.search);
 const chainParam = urlParams.get('chain');

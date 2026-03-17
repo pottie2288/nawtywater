@@ -1,0 +1,921 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us | Nawty Water</title>
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300;1,400;1,700;1,800;1,900&display=swap" rel="stylesheet">
+
+    <!-- GSAP for animations -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+    <style>
+    /* =====================================================
+       ROOT VARIABLES
+    ===================================================== */
+    :root {
+        --blue:          #000e47;
+        --grey:          #e9e7dc;
+        --dark-grey:     #686868;
+        --light-grey:    #d9d9d9;
+        --ocean:         #008FB5;
+        --ocean-light:   #00BFDF;
+        --sky:           #C8F0FA;
+        --sand:          #FFF9F0;
+        --sand-warm:     #FFF3E0;
+        --coral:         #eb4f91;
+        --tropical-teal: #00C9D4;
+        --citrus:        #FFB700;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-family: 'Outfit', sans-serif; scroll-behavior: smooth; }
+    body {
+        background: var(--sand);
+        color: var(--blue);
+        font-family: 'Outfit', sans-serif;
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        overflow-x: hidden;
+    }
+    a { text-decoration: none; color: inherit; }
+    img { display: block; max-width: 100%; }
+
+    /* =====================================================
+       NAV
+    ===================================================== */
+    .site-nav {
+        position: fixed; top: 0; left: 0; right: 0; z-index: 2000;
+        display: flex; align-items: center; justify-content: space-between;
+        padding: 1rem 5%;
+        background: rgba(255,249,240,.94);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        box-shadow: 0 2px 24px rgba(0,14,71,.07);
+        transition: background .4s, padding .4s;
+    }
+
+    .nav-logo { display:inline-flex; align-items:center; }
+    .nav-logo img { height:72px; width:auto; display:block; }
+    @media (max-width:768px) { .nav-logo img { height:56px; } }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; align-items: center; }
+    .nav-links a {
+        font-size: .88rem; font-weight: 600; letter-spacing: .12em;
+        text-transform: uppercase; color: var(--blue); transition: color .3s;
+        position: relative;
+    }
+    .nav-links a:hover { color: var(--ocean); }
+    .nav-links .nav-active { color: var(--coral); }
+    .nav-links a:not(.nav-cta)::after {
+        content:''; position:absolute; bottom:-4px; left:0; right:0;
+        height:2px; background:var(--ocean); transform:scaleX(0);
+        transform-origin:center; transition:transform .35s cubic-bezier(.76,0,.24,1);
+    }
+    .nav-links a:not(.nav-cta):hover::after { transform:scaleX(1); }
+    .nav-cta {
+        padding: .7rem 1.8rem; background: var(--ocean) !important;
+        color: #fff !important; border-radius: 9999px; transition: background .3s !important;
+    }
+    .nav-cta:hover { background: var(--coral) !important; }
+
+    .nav-hamburger {
+        display:none; flex-direction:column; gap:5px;
+        background:none; border:none; cursor:pointer; padding:4px; z-index:2001;
+    }
+    .nav-hamburger span {
+        display:block; width:24px; height:2px; background:var(--blue);
+        transition:transform .3s, opacity .3s, width .3s, background .3s;
+    }
+    .nav-hamburger.open span { background:#fff !important; }
+    .nav-hamburger.open span:nth-child(1) { transform:translateY(7px) rotate(45deg); }
+    .nav-hamburger.open span:nth-child(2) { opacity:0; width:0; }
+    .nav-hamburger.open span:nth-child(3) { transform:translateY(-7px) rotate(-45deg); }
+
+    .nav-mobile-drawer {
+        position:fixed; top:0; left:0; width:100%; height:100vh;
+        background:linear-gradient(170deg, #0077A8, #00C9E8 60%, #FFF8EE);
+        z-index:1999;
+        display:flex; flex-direction:column;
+        align-items:center; justify-content:center; gap:2rem;
+        opacity:0; pointer-events:none;
+        transition:opacity .4s;
+    }
+    .nav-mobile-drawer.open { opacity:1; pointer-events:auto; }
+    .nav-mobile-drawer a {
+        font-size:1.5rem; font-weight:700; color:#fff; letter-spacing:.08em;
+        text-transform:uppercase; transition:color .3s, transform .3s;
+    }
+    .nav-mobile-drawer a:hover { color:var(--coral); transform:translateX(6px); }
+    .nav-mobile-drawer .drawer-cta {
+        margin-top:1rem; padding:.9rem 2.5rem;
+        background:#fff; color:var(--ocean); border-radius:9999px;
+        font-weight:700; font-size:.9rem; letter-spacing:.12em;
+    }
+    .nav-mobile-drawer .drawer-cta:hover { background:var(--coral); color:#fff; transform:none; }
+
+    @media (max-width: 768px) {
+        .nav-links { display: none; }
+        .nav-hamburger { display:flex; }
+    }
+
+    /* =====================================================
+       COMPACT HERO — minimal, text-only
+    ===================================================== */
+    .contact-hero {
+        padding: clamp(8rem, 12vh, 10rem) 5% clamp(3rem, 5vh, 4.5rem);
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        background: var(--sand);
+    }
+
+    /* Subtle decorative gradient orb */
+    .contact-hero::before {
+        content: '';
+        position: absolute;
+        top: -20%; right: -10%;
+        width: 500px; height: 500px;
+        background: radial-gradient(circle, rgba(0,143,181,.06) 0%, transparent 70%);
+        pointer-events: none;
+    }
+    .contact-hero::after {
+        content: '';
+        position: absolute;
+        bottom: -30%; left: -5%;
+        width: 400px; height: 400px;
+        background: radial-gradient(circle, rgba(235,79,145,.04) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .contact-hero-eyebrow {
+        font-size: clamp(.6rem, 1vw, .7rem);
+        font-weight: 700;
+        letter-spacing: .4em;
+        text-transform: uppercase;
+        color: var(--ocean);
+        margin-bottom: 1.25rem;
+    }
+
+    .contact-hero h1 {
+        font-size: clamp(2.8rem, 7vw, 5rem);
+        font-weight: 900;
+        line-height: .9;
+        letter-spacing: -.04em;
+        text-transform: uppercase;
+        color: var(--blue);
+        margin-bottom: 1rem;
+    }
+    .contact-hero h1 em {
+        font-style: italic;
+        color: var(--coral);
+    }
+
+    .contact-hero-sub {
+        font-size: clamp(.88rem, 1.5vw, 1.05rem);
+        font-weight: 300;
+        color: var(--dark-grey);
+        max-width: 480px;
+        margin: 0 auto;
+        line-height: 1.7;
+    }
+
+    /* Divider line */
+    .hero-divider {
+        width: 60px;
+        height: 3px;
+        background: linear-gradient(90deg, var(--ocean), var(--tropical-teal));
+        border-radius: 3px;
+        margin: 2rem auto 0;
+    }
+
+    /* =====================================================
+       CONTACT LAYOUT
+    ===================================================== */
+    .contact-section {
+        padding: clamp(2rem, 4vw, 4rem) 5% clamp(4rem, 8vw, 8rem);
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .contact-grid {
+        display: grid;
+        grid-template-columns: 1fr 1.2fr;
+        gap: clamp(3rem, 5vw, 5rem);
+        align-items: start;
+    }
+
+    @media (max-width: 900px) {
+        .contact-grid { grid-template-columns: 1fr; }
+    }
+
+    /* =====================================================
+       LEFT — INFO COLUMN
+    ===================================================== */
+    .contact-info-eyebrow {
+        font-size: clamp(.6rem, 1vw, .7rem);
+        font-weight: 700;
+        letter-spacing: .35em;
+        text-transform: uppercase;
+        color: var(--ocean);
+        margin-bottom: 1.25rem;
+    }
+
+    .contact-info h2 {
+        font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+        font-weight: 900;
+        line-height: 1;
+        letter-spacing: -.03em;
+        text-transform: uppercase;
+        margin-bottom: 1.25rem;
+    }
+    .contact-info h2 em {
+        font-style: italic;
+        color: var(--coral);
+    }
+
+    .contact-info-text {
+        font-size: clamp(.88rem, 1.2vw, 1rem);
+        font-weight: 300;
+        line-height: 1.8;
+        color: var(--dark-grey);
+        margin-bottom: 2.5rem;
+        max-width: 440px;
+    }
+
+    .contact-details {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        margin-bottom: 2.5rem;
+    }
+
+    .contact-detail-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .contact-detail-icon {
+        width: 48px;
+        height: 48px;
+        min-width: 48px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--ocean), var(--ocean-light));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #fff;
+        font-size: 1.1rem;
+        box-shadow: 0 8px 24px rgba(0,143,181,.15);
+    }
+
+    .contact-detail-label {
+        font-size: .65rem;
+        font-weight: 700;
+        letter-spacing: .2em;
+        text-transform: uppercase;
+        color: var(--ocean);
+        margin-bottom: .25rem;
+    }
+
+    .contact-detail-value {
+        font-size: .95rem;
+        font-weight: 400;
+        color: var(--blue);
+        line-height: 1.5;
+    }
+
+    /* Image card */
+    .contact-image-card {
+        border-radius: 1.25rem;
+        overflow: hidden;
+        position: relative;
+        aspect-ratio: 16 / 10;
+        box-shadow: 0 24px 60px rgba(0,14,71,.08);
+    }
+    .contact-image-card img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform .6s cubic-bezier(.76,0,.24,1);
+    }
+    .contact-image-card:hover img {
+        transform: scale(1.04);
+    }
+    .contact-image-card::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(180deg, transparent 60%, rgba(0,14,71,.2));
+        pointer-events: none;
+    }
+
+    /* =====================================================
+       RIGHT — FORM
+    ===================================================== */
+    .contact-form-wrap {
+        background: #fff;
+        border-radius: 1.5rem;
+        padding: clamp(2rem, 4vw, 3rem);
+        box-shadow: 0 24px 60px rgba(0,14,71,.06);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .contact-form-wrap::before {
+        content: '';
+        position: absolute;
+        top: -60px; right: -60px;
+        width: 200px; height: 200px;
+        background: radial-gradient(circle, rgba(0,143,181,.05) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .form-title {
+        font-size: clamp(1.3rem, 2.5vw, 1.6rem);
+        font-weight: 800;
+        margin-bottom: .5rem;
+        text-transform: uppercase;
+        letter-spacing: -.02em;
+    }
+
+    .form-subtitle {
+        font-size: .85rem;
+        font-weight: 300;
+        color: var(--dark-grey);
+        margin-bottom: 2rem;
+        line-height: 1.6;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+    }
+
+    @media (max-width: 480px) {
+        .form-row { grid-template-columns: 1fr; }
+    }
+
+    .form-group {
+        margin-bottom: 1.25rem;
+        position: relative;
+    }
+
+    .form-label {
+        display: block;
+        font-size: .65rem;
+        font-weight: 700;
+        letter-spacing: .2em;
+        text-transform: uppercase;
+        color: var(--ocean);
+        margin-bottom: .5rem;
+    }
+
+    .form-input,
+    .form-textarea {
+        width: 100%;
+        padding: .9rem 1.1rem;
+        background: var(--sand);
+        border: 2px solid transparent;
+        border-radius: .75rem;
+        font-family: 'Outfit', sans-serif;
+        font-size: .9rem;
+        color: var(--blue);
+        outline: none;
+        transition: border-color .3s, box-shadow .3s, background .3s;
+    }
+
+    .form-input::placeholder,
+    .form-textarea::placeholder {
+        color: var(--light-grey);
+        font-weight: 300;
+    }
+
+    .form-input:focus,
+    .form-textarea:focus {
+        border-color: var(--ocean);
+        background: #fff;
+        box-shadow: 0 0 0 4px rgba(0,143,181,.08);
+    }
+
+    .form-textarea {
+        resize: vertical;
+        min-height: 140px;
+        line-height: 1.6;
+    }
+
+    /* Submit button */
+    .submit-btn {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        padding: 1rem 2rem;
+        background: linear-gradient(135deg, var(--ocean), var(--ocean-light));
+        color: #fff;
+        font-family: 'Outfit', sans-serif;
+        font-size: .8rem;
+        font-weight: 700;
+        letter-spacing: .15em;
+        text-transform: uppercase;
+        border: none;
+        border-radius: 9999px;
+        cursor: pointer;
+        overflow: hidden;
+        transition: transform .2s, box-shadow .3s;
+        margin-top: .5rem;
+    }
+
+    .submit-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 12px 32px rgba(0,143,181,.3);
+    }
+
+    .submit-btn:active {
+        transform: translateY(0);
+    }
+
+    /* Shimmer highlight on button */
+    .submit-btn::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(110deg, transparent 30%, rgba(255,255,255,.15) 50%, transparent 70%);
+        animation: shimmer-slide 3s ease-in-out infinite;
+    }
+
+    @keyframes shimmer-slide {
+        0%, 100% { transform: translateX(-100%); }
+        50% { transform: translateX(100%); }
+    }
+
+    .submit-btn span { position: relative; z-index: 1; }
+
+    /* Success state */
+    .form-success {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 3rem 1rem;
+        gap: 1rem;
+    }
+    .form-success.show { display: flex; }
+    .form-success-icon {
+        width: 72px; height: 72px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, var(--ocean), var(--tropical-teal));
+        display: flex; align-items: center; justify-content: center;
+        color: #fff;
+        box-shadow: 0 12px 32px rgba(0,143,181,.25);
+    }
+    .form-success h3 {
+        font-size: 1.5rem;
+        font-weight: 800;
+        text-transform: uppercase;
+    }
+    .form-success p {
+        font-size: .9rem;
+        font-weight: 300;
+        color: var(--dark-grey);
+        line-height: 1.6;
+        max-width: 320px;
+    }
+
+    /* =====================================================
+       FOOTER
+    ===================================================== */
+    footer {
+        background: #031728;
+        padding: clamp(4.5rem,8vw,7rem) 5% 0;
+    }
+
+    .footer-inner { max-width:1200px; margin:0 auto; }
+
+    .footer-grid {
+        display:grid;
+        grid-template-columns:2fr 1fr 1fr 1.5fr;
+        gap:3rem 2.5rem;
+        padding-bottom:3.5rem;
+        border-bottom:1px solid rgba(255,255,255,.06);
+        margin-bottom:2rem;
+    }
+
+    @media (max-width:900px)  { .footer-grid { grid-template-columns:1fr 1fr; } }
+    @media (max-width:480px)  { .footer-grid { grid-template-columns:1fr; } }
+
+    .footer-logo { display:block; margin-bottom:1rem; }
+    .footer-logo img { height:88px; width:auto; filter:brightness(0) invert(1); }
+
+    .footer-blurb { font-size:.82rem; line-height:1.7; color:rgba(255,255,255,.3); max-width:260px; margin-bottom:1.5rem; }
+
+    .footer-social { display:flex; gap:.75rem; }
+    .social-btn {
+        width:36px; height:36px;
+        border:1px solid rgba(255,255,255,.12);
+        display:flex; align-items:center; justify-content:center;
+        border-radius:50%;
+        font-size:.65rem; font-weight:700; color:rgba(255,255,255,.35);
+        transition:border-color .3s, color .3s, background .3s;
+    }
+    .social-btn:hover { border-color:var(--tropical-teal); color:var(--tropical-teal); background:rgba(0,201,212,.08); }
+
+    .footer-col-head { font-size:.65rem; font-weight:700; letter-spacing:.25em; text-transform:uppercase; color:#fff; margin-bottom:1.25rem; }
+
+    .footer-col-list { list-style:none; display:flex; flex-direction:column; gap:.7rem; }
+    .footer-col-list a { font-size:.82rem; color:rgba(255,255,255,.3); transition:color .3s; }
+    .footer-col-list a:hover { color:var(--tropical-teal); }
+
+    .footer-newsletter input {
+        width:100%;
+        padding:.8rem 1rem;
+        background:rgba(255,255,255,.05);
+        border:1px solid rgba(255,255,255,.1);
+        border-radius:.5rem;
+        color:#fff;
+        font-family:'Outfit',sans-serif;
+        font-size:.82rem;
+        margin-bottom:.75rem;
+        outline:none;
+        transition:border-color .3s;
+    }
+    .footer-newsletter input::placeholder { color:rgba(255,255,255,.25); }
+    .footer-newsletter input:focus { border-color:rgba(0,201,212,.5); }
+
+    .footer-newsletter button {
+        width:100%;
+        padding:.8rem;
+        background:var(--tropical-teal); color:#fff;
+        font-family:'Outfit',sans-serif;
+        font-size:.75rem; font-weight:700;
+        letter-spacing:.15em; text-transform:uppercase;
+        border:none; cursor:pointer;
+        border-radius:9999px;
+        transition:background .3s, transform .2s;
+    }
+    .footer-newsletter button:hover { background:var(--coral); transform:translateY(-1px); }
+
+    .sa-warning {
+        border:1px solid rgba(255,255,255,.06);
+        background:rgba(255,255,255,.02);
+        border-radius:.75rem;
+        padding:1.25rem 1.5rem;
+        margin-bottom:1.75rem;
+    }
+    .sa-warning-title { font-size:.6rem; font-weight:800; letter-spacing:.2em; text-transform:uppercase; color:rgba(255,255,255,.25); margin-bottom:.5rem; }
+    .sa-warning-body  { font-size:.62rem; line-height:1.7; color:rgba(255,255,255,.2); }
+    .sa-warning-body strong { color:rgba(255,255,255,.4); font-weight:700; }
+
+    .footer-bottom {
+        display:flex; justify-content:space-between; align-items:center;
+        flex-wrap:wrap; gap:1rem;
+        padding:1.5rem 0 2rem;
+    }
+    .footer-copy { font-size:.72rem; color:rgba(255,255,255,.18); }
+    .footer-legal { display:flex; gap:1.5rem; }
+    .footer-legal a { font-size:.72rem; color:rgba(255,255,255,.18); transition:color .3s; }
+    .footer-legal a:hover { color:rgba(255,255,255,.5); }
+
+    /* =====================================================
+       REVEAL ANIMATIONS
+    ===================================================== */
+    .reveal { opacity:0; transform:translateY(24px); transition: opacity .6s ease, transform .6s ease; }
+    .reveal.visible { opacity:1; transform:translateY(0); }
+    .reveal-left { opacity:0; transform:translateX(-30px); transition: opacity .6s ease, transform .6s ease; }
+    .reveal-left.visible { opacity:1; transform:translateX(0); }
+    .reveal-right { opacity:0; transform:translateX(30px); transition: opacity .6s ease, transform .6s ease; }
+    .reveal-right.visible { opacity:1; transform:translateX(0); }
+
+    /* =====================================================
+       FOCUS UNDERLINE ANIMATION
+    ===================================================== */
+    .form-group::after {
+        content: '';
+        position: absolute;
+        bottom: 0; left: 50%;
+        width: 0; height: 2px;
+        background: linear-gradient(90deg, var(--ocean), var(--tropical-teal));
+        transition: width .4s cubic-bezier(.76,0,.24,1), left .4s cubic-bezier(.76,0,.24,1);
+        border-radius: 2px;
+    }
+    .form-group.focused::after {
+        width: 100%;
+        left: 0;
+    }
+
+    </style>
+</head>
+<body>
+
+<!-- Mobile nav drawer -->
+<div class="nav-mobile-drawer" id="nav-drawer">
+    <a href="index.html" class="drawer-link">Home</a>
+    <a href="index.html#about" class="drawer-link">About</a>
+    <a href="index.html#products" class="drawer-link">Flavours</a>
+    <a href="store-locator.html" class="drawer-link">Find a Store</a>
+    <a href="contact.html" class="drawer-link" style="color:var(--coral);">Contact Us</a>
+    <a href="#" class="drawer-cta">Shop Now</a>
+</div>
+
+<!-- NAV -->
+<nav class="site-nav" id="site-nav">
+    <a href="index.html" class="nav-logo"><img src="nawtycans/nawtylogo.png" alt="Nawty Water"></a>
+    <ul class="nav-links">
+        <li><a href="index.html#about">About</a></li>
+        <li><a href="index.html#products">Flavours</a></li>
+        <li><a href="store-locator.html">Find a Store</a></li>
+        <li><a href="contact.html" class="nav-active">Contact Us</a></li>
+        <li><a href="#" class="nav-cta">Shop Now</a></li>
+    </ul>
+    <button class="nav-hamburger" id="nav-hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+    </button>
+</nav>
+
+<!-- =====================================================
+     HERO — compact, clean, no gradient splash
+===================================================== -->
+<section class="contact-hero">
+    <p class="contact-hero-eyebrow reveal">Get in Touch</p>
+    <h1 class="reveal">Contact <em>Us</em></h1>
+    <p class="contact-hero-sub reveal">Got a question, want to stock Nawty Water, or just want to say hi? We'd love to hear from you.</p>
+    <div class="hero-divider reveal"></div>
+</section>
+
+<!-- =====================================================
+     CONTACT SECTION
+===================================================== -->
+<section class="contact-section">
+    <div class="contact-grid">
+
+        <!-- Left: Info -->
+        <div class="contact-info reveal-left">
+            <p class="contact-info-eyebrow">Let's Connect</p>
+            <h2>We're all <em>ears</em></h2>
+            <p class="contact-info-text">
+                Drop us a message and we'll get back to you faster than you can crack open a cold one. Whether it's about our flavours, partnerships, or anything else — we're here for it.
+            </p>
+
+            <div class="contact-details">
+                <div class="contact-detail-item">
+                    <div class="contact-detail-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                    </div>
+                    <div>
+                        <p class="contact-detail-label">Email</p>
+                        <p class="contact-detail-value">info@nawtywater.co.za</p>
+                    </div>
+                </div>
+
+                <div class="contact-detail-item">
+                    <div class="contact-detail-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+                    </div>
+                    <div>
+                        <p class="contact-detail-label">Location</p>
+                        <p class="contact-detail-value">South Africa</p>
+                    </div>
+                </div>
+
+                <div class="contact-detail-item">
+                    <div class="contact-detail-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    </div>
+                    <div>
+                        <p class="contact-detail-label">Response Time</p>
+                        <p class="contact-detail-value">Within 24 hours</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lifestyle image -->
+            <div class="contact-image-card">
+                <img src="nawtycans/story1.jpg" alt="Nawty Water lifestyle">
+            </div>
+        </div>
+
+        <!-- Right: Form -->
+        <div class="contact-form-wrap reveal-right" id="contact-form-wrap">
+            <form id="contact-form">
+                <h3 class="form-title">Send a Message</h3>
+                <p class="form-subtitle">Fill in your details and we'll be in touch.</p>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label" for="first-name">First Name</label>
+                        <input class="form-input" type="text" id="first-name" name="first-name" placeholder="John" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="last-name">Surname</label>
+                        <input class="form-input" type="text" id="last-name" name="last-name" placeholder="Doe" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="email">Email Address</label>
+                    <input class="form-input" type="email" id="email" name="email" placeholder="john@example.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="subject">Subject</label>
+                    <input class="form-input" type="text" id="subject" name="subject" placeholder="What's this about?">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="message">Your Message</label>
+                    <textarea class="form-textarea" id="message" name="message" placeholder="Tell us what's on your mind..." required></textarea>
+                </div>
+
+                <button type="submit" class="submit-btn">
+                    <span>Send Message</span>
+                </button>
+            </form>
+
+            <!-- Success state -->
+            <div class="form-success" id="form-success">
+                <div class="form-success-icon">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <h3>Message Sent!</h3>
+                <p>Thanks for reaching out. Our team will get back to you within 24 hours. Stay Nawty.</p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- =====================================================
+     FOOTER
+===================================================== -->
+<footer>
+    <div class="footer-inner">
+        <div class="footer-grid">
+
+            <div class="footer-logo-col">
+                <span class="footer-logo"><img src="nawtycans/nawtylogo.png" alt="Nawty Water"></span>
+                <p class="footer-blurb">South Africa's boldest hard seltzer. Three flavours. Zero compromise. Drink responsibly.</p>
+                <div class="footer-social">
+                    <a href="#" class="social-btn" aria-label="Instagram">IG</a>
+                    <a href="#" class="social-btn" aria-label="Facebook">FB</a>
+                    <a href="#" class="social-btn" aria-label="Twitter">TW</a>
+                    <a href="#" class="social-btn" aria-label="TikTok">TK</a>
+                </div>
+            </div>
+
+            <div>
+                <h4 class="footer-col-head">Navigation</h4>
+                <ul class="footer-col-list">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="index.html#about">The Story</a></li>
+                    <li><a href="index.html#products">Flavours</a></li>
+                    <li><a href="store-locator.html">Find a Store</a></li>
+                    <li><a href="contact.html">Contact Us</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="footer-col-head">Legal</h4>
+                <ul class="footer-col-list">
+                    <li><a href="#">Privacy Policy</a></li>
+                    <li><a href="#">Terms of Use</a></li>
+                    <li><a href="#">Responsible Drinking</a></li>
+                    <li><a href="#">Liquor License</a></li>
+                    <li><a href="#">FAQ</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="footer-col-head">Newsletter</h4>
+                <p style="font-size:.78rem;color:rgba(255,255,255,.3);line-height:1.6;margin-bottom:1rem;">Crafted content. Once a month, never more.</p>
+                <div class="footer-newsletter">
+                    <input type="email" placeholder="Your email address" aria-label="Email address">
+                    <button type="submit">Subscribe</button>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="sa-warning" role="note">
+            <div class="sa-warning-title">&#9888; Liquor Products Act — Republic of South Africa</div>
+            <div class="sa-warning-body">
+                <strong>NOT FOR SALE TO PERSONS UNDER THE AGE OF 18.</strong>
+                It is illegal to sell or supply liquor to a minor. &middot; Don't drink and drive. &middot;
+                Not for pregnant women. &middot; Enjoy Nawty Water responsibly. &middot;
+                Nawty Water is a registered trademark. Product of South Africa. &middot;
+                Contains: Water, Fermented Alcohol Base, Natural Fruit Flavouring, Carbon Dioxide. &middot;
+                Nawty Water (Pty) Ltd, Republic of South Africa. &middot; info@nawtywater.co.za
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <p class="footer-copy">&copy; 2025 Nawty Water (Pty) Ltd. All Rights Reserved.</p>
+            <div class="footer-legal">
+                <a href="#">Privacy</a>
+                <a href="#">Terms</a>
+                <a href="#">Cookies</a>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- =====================================================
+     JAVASCRIPT
+===================================================== -->
+<script>
+'use strict';
+
+/* -------------------------------------------------
+   HAMBURGER / MOBILE DRAWER
+------------------------------------------------- */
+const hamburgerBtn = document.getElementById('nav-hamburger');
+const mobileDrawer = document.getElementById('nav-drawer');
+
+hamburgerBtn.addEventListener('click', () => {
+    const isOpen = hamburgerBtn.classList.toggle('open');
+    mobileDrawer.classList.toggle('open', isOpen);
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+});
+
+mobileDrawer.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+        hamburgerBtn.classList.remove('open');
+        mobileDrawer.classList.remove('open');
+        document.body.style.overflow = '';
+    });
+});
+
+/* -------------------------------------------------
+   SCROLL REVEAL (IntersectionObserver — reliable)
+------------------------------------------------- */
+const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+
+const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            revealObserver.unobserve(entry.target);
+        }
+    });
+}, { threshold: 0.15 });
+
+revealEls.forEach(el => revealObserver.observe(el));
+
+/* -------------------------------------------------
+   FORM INPUT FOCUS ANIMATION
+------------------------------------------------- */
+document.querySelectorAll('.form-input, .form-textarea').forEach(input => {
+    input.addEventListener('focus', () => {
+        input.closest('.form-group').classList.add('focused');
+    });
+    input.addEventListener('blur', () => {
+        input.closest('.form-group').classList.remove('focused');
+    });
+});
+
+/* -------------------------------------------------
+   FORM SUBMISSION
+------------------------------------------------- */
+const contactForm = document.getElementById('contact-form');
+const formSuccess = document.getElementById('form-success');
+
+contactForm.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const btn = contactForm.querySelector('.submit-btn');
+    btn.style.pointerEvents = 'none';
+    btn.querySelector('span').textContent = 'Sending...';
+
+    // Simulate send delay
+    setTimeout(() => {
+        contactForm.style.opacity = '0';
+        contactForm.style.transform = 'translateY(-10px)';
+        contactForm.style.transition = 'opacity .4s, transform .4s';
+
+        setTimeout(() => {
+            contactForm.style.display = 'none';
+            formSuccess.classList.add('show');
+            formSuccess.style.opacity = '0';
+            formSuccess.style.transform = 'translateY(10px)';
+            formSuccess.style.transition = 'opacity .4s, transform .4s';
+
+            requestAnimationFrame(() => {
+                formSuccess.style.opacity = '1';
+                formSuccess.style.transform = 'translateY(0)';
+            });
+        }, 400);
+    }, 800);
+});
+
+</script>
+
+</body>
+</html>
